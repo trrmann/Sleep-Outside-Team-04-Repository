@@ -6,4 +6,6 @@ Member: Jonathan Mazzoli
 GitHub: JonathanMazzoli2401
 Member: Tracy Mann
 GitHub: trrmann
+Member: Jonathan Villegas
+GitHub: joribavi
 
