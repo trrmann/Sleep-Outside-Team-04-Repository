@@ -33,19 +33,12 @@ In vite.config.js, add the plugin and configure it to copy your json folder to d
 
 This will copy all files from src/json to dist/json during the build. Alternatively, move your json files to a public folder at the project root for automatic copying.
 
-i'm using pnpm instead so i ran:
-  pnpm install vite-plugin-static-copy --save-dev
-    was required to run the following first:  pnpm add -g pnpm 
 
-  had to remove node modules folder and reinstall pnpm
+so the steps are:
+  npm install vite-plugin-static-copy --save-dev
+  npm run build
 
-  once pnpm was fixed and static opcy installed, then added the plugins section to teh config file.
-
-  needed to change the single quotes to double to match the teams standard.
-
-  needed to remove the /src in from the of the file source folder in the config in order for it to build correctly.
-
-  pnpm run build
+No need to install pnpm or use pnpm commands. All dependencies and build steps use npm now.
 
   this did add the item to local storage, but only 1 item is in the cart at a time, if you add another item to the cart it overwrites this one.
 
