@@ -46,3 +46,14 @@ i'm using pnpm instead so i ran:
   needed to remove the /src in from the of the file source folder in the config in order for it to build correctly.
 
   pnpm run build
+
+  this did add the item to local storage, but only 1 item is in the cart at a time, if you add another item to the cart it overwrites this one.
+
+
+function addProductToCart(product) {
+  setLocalStorage("so-cart", product);
+}
+
+only has 1 item possible in the cart
+
+
