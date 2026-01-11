@@ -56,4 +56,21 @@ function addProductToCart(product) {
 
 only has 1 item possible in the cart
 
+updated to the following to allow multiple items and counts of the items.
+
+function addProductToCart(product) {
+  let products = getLocalStorage("so-cart");
+  if(products == undefined) {
+    products = {}
+  }
+  if (Object.prototype.hasOwnProperty.call(products, product.Id)) {
+    products[product.Id]["count"] = products[product.Id]["count"] + 1;
+  } else {
+    products[product.Id] = {
+      "count": 1,
+      "itemData": product
+    };
+  }
+  setLocalStorage("so-cart", products);
+}
 

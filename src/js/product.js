@@ -8,13 +8,13 @@ function addProductToCart(product) {
   if(products == undefined) {
     products = {}
   }
-  if (products.includes(product.Id)) {
+  if (Object.prototype.hasOwnProperty.call(products, product.Id)) {
     products[product.Id]["count"] = products[product.Id]["count"] + 1;
   } else {
-    products.add(product.Id,{
+    products[product.Id] = {
       "count": 1,
       "itemData": product
-    });
+    };
   }
   setLocalStorage("so-cart", products);
 }
