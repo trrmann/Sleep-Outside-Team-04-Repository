@@ -74,3 +74,4 @@ function addProductToCart(product) {
   setLocalStorage("so-cart", products);
 }
 
+after lint and build, review on the render site shows that it now adds multiple types of items and counts each click to add another of the same to the cart.
