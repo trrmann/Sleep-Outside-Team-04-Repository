@@ -33,9 +33,9 @@ export default defineConfig({
       targets: [
         {
           src: "json/*",
-          dest: "json"
-        }
-      ]
-    })
-  ]
+          dest: "json",
+        },
+      ],
+    }),
+  ],
 });
