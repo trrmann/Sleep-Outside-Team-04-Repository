@@ -5,15 +5,15 @@ const dataSource = new ProductData("tents");
 
 function addProductToCart(product) {
   let products = getLocalStorage("so-cart");
-  if(products == undefined) {
-    products = {}
+  if (products == undefined) {
+    products = {};
   }
   if (Object.prototype.hasOwnProperty.call(products, product.Id)) {
     products[product.Id]["count"] = products[product.Id]["count"] + 1;
   } else {
     products[product.Id] = {
-      "count": 1,
-      "itemData": product
+      count: 1,
+      itemData: product,
     };
   }
   setLocalStorage("so-cart", products);

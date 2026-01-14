@@ -132,6 +132,12 @@ button {
 }
 
 /* End cart icon styles */
+.cart-footer {
+  display: block;
+}
+.cart-footer.hide {
+  display: none;
+}
 
 .mission {
   position: absolute;
