@@ -20,9 +20,19 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
+<<<<<<< HEAD
           src: "json/*",
           dest: "json",
         },
+=======
+          src: "public/json/*",
+          dest: "json",
+        },
+        {
+          src: "public/images/**/*",
+          dest: "images",
+        },
+>>>>>>> trm-Total$inCart
       ],
     }),
   ],
