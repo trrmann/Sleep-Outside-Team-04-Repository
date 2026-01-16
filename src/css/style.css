@@ -257,6 +257,31 @@ button {
   }
 }
 
+.cart-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #e53935;
+  color: white;
+  font-size: 0.7rem;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  font-weight: bold;
+}
+
+.cart-count:empty {
+  display: none;
+}
+
+
 footer {
   font-size: var(--small-font);
   padding: 1em;
