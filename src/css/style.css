@@ -130,6 +130,28 @@ button {
 .cart:hover svg {
   fill: gray;
 }
+/* Cart remove icon */
+.cart-remove {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.cart-remove:hover {
+  color: #d32f2f;          /* red on hover */
+  transform: scale(1.2);
+}
+
+.cart-card {
+  position: relative;
+}
 
 /* End cart icon styles */
 .cart-footer {
