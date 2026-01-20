@@ -145,7 +145,7 @@ button {
 }
 
 .cart-remove:hover {
-  color: #d32f2f;          /* red on hover */
+  color: #d32f2f; /* red on hover */
   transform: scale(1.2);
 }
 

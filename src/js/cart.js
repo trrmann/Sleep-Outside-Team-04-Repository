@@ -19,7 +19,7 @@ function renderCartContents() {
   // Show footer if items exist
   if (cartFooter) cartFooter.classList.remove("hide");
 
-  const cartItems = cartKeys.map(key => cart[key].itemData);
+  const cartItems = cartKeys.map((key) => cart[key].itemData);
 
   // Calculate total
   const totalCost = cartItems.reduce((acc, item) => {
@@ -32,8 +32,8 @@ function renderCartContents() {
   }
 
   // Render items
-  const htmlItems = cartItems.map(item =>
-    cartItemTemplate(item, cart[item.Id]?.count || 1)
+  const htmlItems = cartItems.map((item) =>
+    cartItemTemplate(item, cart[item.Id]?.count || 1),
   );
 
   productList.innerHTML = htmlItems.join("");
@@ -60,7 +60,7 @@ function cartItemTemplate(item, count) {
 }
 
 function attachRemoveListeners() {
-  document.querySelectorAll(".cart-remove").forEach(btn => {
+  document.querySelectorAll(".cart-remove").forEach((btn) => {
     // Remove any old listeners first (prevents duplicates on re-render)
     btn.removeEventListener("click", handleRemoveClick);
     btn.addEventListener("click", handleRemoveClick);
