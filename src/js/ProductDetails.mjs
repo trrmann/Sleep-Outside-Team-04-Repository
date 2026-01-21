@@ -19,10 +19,23 @@ export default class ProductDetails {
 
   addProductToCart() {
     const cart = getLocalStorage("so-cart") || [];
-    cart.push(this.product);
+
+    const existingIndex = cart.findIndex(
+      (item) => String(item.Id) === String(this.product.Id)
+    );
+
+    if (existingIndex >= 0) {
+      const existing = cart[existingIndex];
+      existing.Quantity = (existing.Quantity || 1) + 1;
+      cart[existingIndex] = existing;
+    } else {
+      cart.push({ ...this.product, Quantity: 1 });
+    }
+
     setLocalStorage("so-cart", cart);
     updateCartCount();
   }
+
 
   renderProductDetails() {
     // matches src/product_pages/index.html structure

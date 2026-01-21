@@ -44,16 +44,20 @@ export function getParam(param) {
 export function updateCartCount() {
   const cart = getLocalStorage("so-cart") || [];
   const cartLink = document.querySelector(".cart a");
-
   if (!cartLink) return;
 
   let badge = cartLink.querySelector(".cart-count");
-
   if (!badge) {
     badge = document.createElement("span");
     badge.classList.add("cart-count");
     cartLink.appendChild(badge);
   }
 
-  badge.textContent = cart.length;
+  const totalQty = cart.reduce(
+    (sum, item) => sum + Number(item.Quantity || 1),
+    0
+  );
+
+  badge.textContent = totalQty;
 }
+
