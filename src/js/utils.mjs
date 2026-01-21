@@ -1,9 +1,7 @@
 // generic template list renderer
-export function renderListWithTemplate(femplateFn, parentElement, list, position = "afterbegin", clear = false) {
-      if(clear) {
-        parentElement.innerHTML = "";  
-      }
-      parentElement.insertAdjacentHTML(position, list.map(femplateFn).join(""));
+export function renderListWithTemplate(templateFn, parentElement, list, position = "afterbegin", clear = false) {
+  if (clear) parentElement.innerHTML = "";
+  parentElement.insertAdjacentHTML(position, list.map(templateFn).join(""));
 }
 
 // wrapper for querySelector...returns matching element
