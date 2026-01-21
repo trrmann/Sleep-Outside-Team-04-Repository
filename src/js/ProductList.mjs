@@ -20,14 +20,14 @@ export default class ProductList {
     this._targetElement = targetElement;
   }
   async init() {
-    this._list = await this.dataSource.getData();
+    this._list = await this.dataSource.getData(this.productCategory);
   }
   productCardTemplate(product) {
     return `
           <li class="product-card">
-            <a href="product_pages/index.html?id=${product.Id}">
+            <a href="../product_pages/index.html?id=${product.Id}">
               <img
-                src="${product.Image}"
+                src="${product.Images.PrimaryMedium}"
                 alt="${product.Name}"
               />
               <h3 class="card__brand">${product.Brand.Name}</h3>
@@ -37,6 +37,6 @@ export default class ProductList {
           </li>`
         };
     renderList() {
-      renderListWithTemplate(this.productCardTemplate, this.listElement, this.list.filter(function (product) {return product.Top === true;}), "afterbegin");
+      renderListWithTemplate(this.productCardTemplate, this.listElement, this.list, "afterbegin");
     }
 }

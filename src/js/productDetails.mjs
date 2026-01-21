@@ -7,7 +7,9 @@ export default class ProductDetails {
     this.dataSource = dataSource;
   }
   async init(){
-    this.product = await this.dataSource.findProductById(this.productId);
+    //this.product = await this.dataSource.findProductById(this.productId);
+    const response = await fetch(`${this.dataSource.baseURL}product/${this.productId}`);
+    this.product = (await response.json()).Result;
     // add listener to Add to Cart button
     const addToCartBtn = document.getElementById("addToCart");
     if (addToCartBtn) {
@@ -35,6 +37,7 @@ export default class ProductDetails {
     setLocalStorage("so-cart", products);
   }
   renderProductDetails(){
+    console.log(this.product);
     const pageTitleContainer = document.querySelector("title");
     pageTitleContainer.innerText = `Sleep Outside | ${this.product.NameWithoutBrand}`;
     const productBrandContainer = document.querySelector(".product-brand");
@@ -42,7 +45,7 @@ export default class ProductDetails {
     const productNameContainer = document.querySelector(".product-name");
     productNameContainer.innerText = this.product.NameWithoutBrand;
     const productImageContainer = document.querySelector(".product-image");
-    productImageContainer.src = this.product.Image;
+    productImageContainer.src = this.product.Images.PrimaryLarge;
     productImageContainer.alt = this.product.Name;
     const productPriceContainer = document.querySelector(".product-card__price");
     productPriceContainer.innerText = `$${this.product.FinalPrice}`;
