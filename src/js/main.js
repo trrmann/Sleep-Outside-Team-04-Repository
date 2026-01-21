@@ -1,9 +1,9 @@
-import { updateCartCount } from "./utils.mjs";
+import { loadHeaderFooter, updateCartCount } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 import ProductList from "./ProductList.mjs";
 import Alert from "./Alert.js";
 
-updateCartCount();
+await loadHeaderFooter(updateCartCount);
 
 const alert = new Alert();
 await alert.init();

@@ -1,4 +1,6 @@
-import { getLocalStorage, setLocalStorage, updateCartCount } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, updateCartCount, loadHeaderFooter } from "./utils.mjs";
+
+await loadHeaderFooter(updateCartCount);
 
 function cartItemTemplate(item) {
   const qty = Number(item.Quantity || 1);
