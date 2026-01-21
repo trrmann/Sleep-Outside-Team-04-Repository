@@ -1,4 +1,5 @@
-import { setLocalStorage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, updateCartCount } from "./utils.mjs";
+
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -17,23 +18,35 @@ export default class ProductDetails {
   }
 
   addProductToCart() {
-    setLocalStorage("so-cart", this.product);
+    const cart = getLocalStorage("so-cart") || [];
+    cart.push(this.product);
+    setLocalStorage("so-cart", cart);
+    updateCartCount();
   }
 
   renderProductDetails() {
-    // This assumes your product_pages/index.html has these elements/classes
-    document.querySelector(".product-name").textContent = this.product.Name;
+    // matches src/product_pages/index.html structure
+    document.querySelector(".product-brand").textContent =
+      this.product.Brand?.Name ?? "";
+
+    document.querySelector(".product-name").textContent =
+      this.product.NameWithoutBrand ?? this.product.Name ?? "";
+
     const img = document.querySelector(".product-image");
     img.src = this.product.Image;
-    img.alt = this.product.Name;
+    img.alt = this.product.Name ?? "Product image";
 
     document.querySelector(".product-card__price").textContent =
-      `$${this.product.FinalPrice}`;
+      `$${Number(this.product.FinalPrice).toFixed(2)}`;
 
     document.querySelector(".product__color").textContent =
       this.product.Colors?.[0]?.ColorName ?? "";
 
     document.querySelector(".product__description").innerHTML =
-      this.product.DescriptionHtmlSimple;
+      this.product.DescriptionHtmlSimple ?? "";
+
+    // optional: set page title + button data-id
+    document.title = this.product.Name ?? "Product Details";
+    document.getElementById("addToCart").dataset.id = this.product.Id ?? "";
   }
 }
