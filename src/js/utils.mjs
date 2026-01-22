@@ -55,16 +55,45 @@ export function getParam(param) {
 export function updateCartCount() {
   const cart = getLocalStorage("so-cart") || [];
   const cartLink = document.querySelector(".cart a");
-
   if (!cartLink) return;
 
   let badge = cartLink.querySelector(".cart-count");
-
   if (!badge) {
     badge = document.createElement("span");
     badge.classList.add("cart-count");
     cartLink.appendChild(badge);
   }
 
-  badge.textContent = cart.length;
+  const totalQty = cart.reduce(
+    (sum, item) => sum + Number(item.Quantity || 1),
+    0
+  );
+
+  badge.textContent = totalQty;
+}
+
+export function renderWithTemplate(template, parentElement, data, callback) {
+  parentElement.innerHTML = template;
+  if (callback) callback(data);
+}
+
+export async function loadTemplate(path) {
+  const res = await fetch(path);
+  return await res.text();
+}
+
+export async function loadHeaderFooter(callback) {
+  const headerTemplate = await loadTemplate("/partials/header.html");
+  const footerTemplate = await loadTemplate("/partials/footer.html");
+
+  const headerElement = document.querySelector("#main-header");
+  const footerElement = document.querySelector("#main-footer");
+
+  if (headerElement) {
+    renderWithTemplate(headerTemplate, headerElement, null, callback);
+  }
+
+  if (footerElement) {
+    renderWithTemplate(footerTemplate, footerElement);
+  }
 }

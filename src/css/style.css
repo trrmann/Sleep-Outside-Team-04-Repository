@@ -180,6 +180,7 @@ button {
   line-height: 1;
 }
 
+
 .cart-remove:hover {
   color: #d32f2f; /* red on hover */
   transform: scale(1.2);
@@ -212,56 +213,6 @@ button {
 .mission p {
   margin: 0 auto;
   width: 50%;
-  text-align: center;
-}
-
-.categories {
-  margin-top: 2rem;
-  padding: 1rem;
-}
-
-.categories-list {
-  display: flex;
-  flex-direction: row;
-  gap: 9rem;
-  list-style-type: none;
-}
-
-.categories-list > * {
-  font-size: 1rem;
-  margin: 0;
-  padding: 0.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.categories-list img {
-  display: block;
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 0.5rem;
-}
-
-.categories-list h3,
-.categories-list .category-title {
-  margin-top: 0;
-  margin-bottom: 0;
-  text-align: center;
-}
-
-.categories-list a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.categories {
-  min-width: 11rem;
-  width: 25%;
-}
-
-.categories > h2 {
   text-align: center;
 }
 
@@ -355,6 +306,47 @@ button {
   grid-column: 3;
 }
 
+/* W03 Individual: Category tiles (home page) */
+.categories {
+  margin: 1.5rem 0;
+}
+
+.categories h2 {
+  margin: 0 0 0.75rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+}
+
+.category-card:hover {
+  border-color: #999;
+}
+
+.category-card img {
+  width: 52px;
+  height: 52px;
+}
+
+.category-card span {
+  font-weight: 600;
+}
+
+
 @media screen and (min-width: 500px) {
   body {
     max-width: 1080px;
@@ -375,6 +367,19 @@ footer {
   font-size: var(--small-font);
   padding: 1em;
 }
+
+.cart-footer {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-top: 1px solid #ccc;
+  text-align: right;
+  font-weight: bold;
+}
+
+.hide {
+  display: none;
+}
+
 
 /* Badge Css */
 .discount-badge {

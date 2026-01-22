@@ -19,10 +19,23 @@ export default class ProductDetails {
 
   addProductToCart() {
     const cart = getLocalStorage("so-cart") || [];
-    cart.push(this.product);
+
+    const existingIndex = cart.findIndex(
+      (item) => String(item.Id) === String(this.product.Id)
+    );
+
+    if (existingIndex >= 0) {
+      const existing = cart[existingIndex];
+      existing.Quantity = (existing.Quantity || 1) + 1;
+      cart[existingIndex] = existing;
+    } else {
+      cart.push({ ...this.product, Quantity: 1 });
+    }
+
     setLocalStorage("so-cart", cart);
     updateCartCount();
   }
+
 
   renderProductDetails() {
     // matches src/product_pages/index.html structure
@@ -33,8 +46,15 @@ export default class ProductDetails {
       this.product.NameWithoutBrand ?? this.product.Name ?? "";
 
     const img = document.querySelector(".product-image");
-    img.src = this.product.Image;
+    img.src =
+      this.product?.Images?.PrimaryLarge ||
+      this.product?.Images?.PrimaryMedium ||
+      this.product?.PrimaryLarge ||
+      this.product?.PrimaryMedium ||
+      this.product?.Image ||
+      "";
     img.alt = this.product.Name ?? "Product image";
+
 
     document.querySelector(".product-card__price").textContent =
       `$${Number(this.product.FinalPrice).toFixed(2)}`;

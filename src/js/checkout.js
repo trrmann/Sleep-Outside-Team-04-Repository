@@ -1,8 +1,6 @@
 import { loadHeaderFooter, updateCartCount } from "./utils.mjs";
-import Alert from "./Alert.js";
 
 await loadHeaderFooter(updateCartCount);
 updateCartCount();
 
-const alert = new Alert();
-await alert.init();
+//The Checkout functionality will be implemented in later activities.
