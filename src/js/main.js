@@ -9,6 +9,10 @@ const alert = new Alert();
 await alert.init();
 
 const productData = new ProductData("tents");
-const productList = new ProductList(productData.category, productData, ".product-list");
+const productList = new ProductList(
+  productData.category,
+  productData,
+  ".product-list",
+);
 await productList.init();
 productList.renderList();
