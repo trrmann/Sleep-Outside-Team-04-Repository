@@ -35,6 +35,17 @@ export function setClick(selector, callback) {
   qs(selector).addEventListener("click", callback);
 }
 
+export function getQueryParm(parmName) {
+  // Get the full URL's query string (e.g., "?id=123&name=tent")
+  const queryString = window.location.search;
+
+  // Create a URLSearchParams object
+  const urlParams = new URLSearchParams(queryString);
+
+  // Get the value of the parameter
+  return urlParams.get(parmName);
+}
+
 // URL param helper
 export function getParam(param) {
   const urlParams = new URLSearchParams(window.location.search);
