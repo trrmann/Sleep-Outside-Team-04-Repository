@@ -346,6 +346,70 @@ button {
   font-weight: 600;
 }
 
+/* Product Search */
+.nav-search {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-search input[type="search"] {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-width: 180px;
+}
+
+/* Navbar search overrides */
+.nav-search button {
+  color: #111 !important;
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+}
+
+.nav-search button:hover {
+  border-color: #999 !important;
+}
+
+/* ------------------------------*/
+/* Product List sort */
+.list-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem 0 1rem;
+}
+
+/* ------------------------- */
+.discount-flag {
+  display: inline-block;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-weight: 600;
+}
+
+/* ------------------------------------------ */
+.breadcrumbs {
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------ */
 
 @media screen and (min-width: 500px) {
   body {

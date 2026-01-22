@@ -1,8 +1,9 @@
+// src/js/ProductList.mjs
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
-  const final = Number(product.FinalPrice);
-  const retail = Number(product.SuggestedRetailPrice);
+  const final = Number(product?.FinalPrice ?? 0);
+  const retail = Number(product?.SuggestedRetailPrice ?? 0);
 
   const isDiscounted =
     Number.isFinite(final) &&
@@ -12,13 +13,25 @@ function productCardTemplate(product) {
 
   const percentOff = isDiscounted ? Math.round((1 - final / retail) * 100) : 0;
 
+  const medium = product?.Images?.PrimaryMedium || product?.PrimaryMedium || "";
+  const large = product?.Images?.PrimaryLarge || product?.PrimaryLarge || "";
+  const fallback = getProductImage(product);
+
   return `
     <li class="product-card">
       <a href="/product_pages/?product=${product.Id}">
         ${isDiscounted ? `<span class="discount-badge">-${percentOff}%</span>` : ""}
-        <img src="${getProductImage(product)}" alt="${product.Name ?? "Product image"}" />
-        <h3 class="card__brand">${product.Brand?.Name ?? product.Brand ?? ""}</h3>
-        <h2 class="card__name">${product.NameWithoutBrand ?? product.Name ?? ""}</h2>
+
+        <img
+          src="${medium || fallback}"
+          srcset="${medium ? `${medium} 600w,` : ""} ${large ? `${large} 1200w` : ""}".trim()
+          sizes="(max-width: 600px) 600px, 1200px"
+          alt="${product.Name ?? "Product image"}"
+          loading="lazy"
+        />
+
+        <h3 class="card__brand">${product?.Brand?.Name ?? product?.Brand ?? ""}</h3>
+        <h2 class="card__name">${product?.NameWithoutBrand ?? product?.Name ?? ""}</h2>
         <p class="product-card__price">$${final.toFixed(2)}</p>
       </a>
     </li>
@@ -54,6 +67,12 @@ export default class ProductList {
     if (!parent) return;
 
     const safeList = Array.isArray(list) ? list : [];
-    renderListWithTemplate(productCardTemplate, parent, safeList, "afterbegin", true);
+    renderListWithTemplate(
+      productCardTemplate,
+      parent,
+      safeList,
+      "afterbegin",
+      true
+    );
   }
 }

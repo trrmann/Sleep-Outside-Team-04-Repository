@@ -1,5 +1,5 @@
+// src/js/ProductDetails.mjs
 import { getLocalStorage, setLocalStorage, updateCartCount } from "./utils.mjs";
-
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -12,9 +12,26 @@ export default class ProductDetails {
     this.product = await this.dataSource.findProductById(this.productId);
     this.renderProductDetails();
 
-    document
-      .getElementById("addToCart")
-      .addEventListener("click", this.addProductToCart.bind(this));
+    const retail = Number(this.product?.SuggestedRetailPrice);
+    const final = Number(this.product?.FinalPrice);
+
+    const flag = document.querySelector("#discount-flag");
+    if (flag) {
+      if (Number.isFinite(retail) && Number.isFinite(final) && retail > final) {
+        const percentOff = Math.round((1 - final / retail) * 100);
+        const amountOff = (retail - final).toFixed(2);
+        flag.textContent = `Discount: -${percentOff}% (Save $${amountOff})`;
+      } else {
+        flag.textContent = "";
+      }
+    }
+
+    
+    const btn = document.getElementById("addToCart");
+    if (btn) {
+      btn.addEventListener("click", this.addProductToCart.bind(this));
+      btn.dataset.id = this.product?.Id ?? "";
+    }
   }
 
   addProductToCart() {
@@ -26,47 +43,82 @@ export default class ProductDetails {
 
     if (existingIndex >= 0) {
       const existing = cart[existingIndex];
-      existing.Quantity = (existing.Quantity || 1) + 1;
-      cart[existingIndex] = existing;
+
+      // support both fields: Quantity (legacy) and quantity (new)
+      const currentQty = Number(existing.quantity ?? existing.Quantity ?? 1);
+      const nextQty = (Number.isFinite(currentQty) && currentQty > 0 ? currentQty : 1) + 1;
+
+      cart[existingIndex] = { ...existing, quantity: nextQty, Quantity: nextQty };
     } else {
-      cart.push({ ...this.product, Quantity: 1 });
+      cart.push({ ...this.product, quantity: 1, Quantity: 1 });
     }
 
     setLocalStorage("so-cart", cart);
     updateCartCount();
   }
 
-
   renderProductDetails() {
     // matches src/product_pages/index.html structure
-    document.querySelector(".product-brand").textContent =
-      this.product.Brand?.Name ?? "";
+    const brandEl = document.querySelector(".product-brand");
+    if (brandEl) brandEl.textContent = this.product?.Brand?.Name ?? "";
 
-    document.querySelector(".product-name").textContent =
-      this.product.NameWithoutBrand ?? this.product.Name ?? "";
+    const nameEl = document.querySelector(".product-name");
+    if (nameEl) {
+      nameEl.textContent = this.product?.NameWithoutBrand ?? this.product?.Name ?? "";
+    }
 
+    // Responsive image: PrimaryMedium for small, PrimaryLarge for larger screens
     const img = document.querySelector(".product-image");
-    img.src =
-      this.product?.Images?.PrimaryLarge ||
-      this.product?.Images?.PrimaryMedium ||
-      this.product?.PrimaryLarge ||
-      this.product?.PrimaryMedium ||
-      this.product?.Image ||
-      "";
-    img.alt = this.product.Name ?? "Product image";
+    if (img) {
+      const medium =
+        this.product?.Images?.PrimaryMedium || this.product?.PrimaryMedium || "";
+      const large =
+        this.product?.Images?.PrimaryLarge || this.product?.PrimaryLarge || "";
+      const fallback =
+        this.product?.Image || medium || large || "";
 
+      img.src = medium || large || fallback;
 
-    document.querySelector(".product-card__price").textContent =
-      `$${Number(this.product.FinalPrice).toFixed(2)}`;
+      // Only set srcset if we have at least one valid URL
+      const srcsetParts = [];
+      if (medium) srcsetParts.push(`${medium} 600w`);
+      if (large) srcsetParts.push(`${large} 1200w`);
+      if (srcsetParts.length) {
+        img.srcset = srcsetParts.join(", ");
+        img.sizes = "(max-width: 600px) 600px, 1200px";
+      }
 
-    document.querySelector(".product__color").textContent =
-      this.product.Colors?.[0]?.ColorName ?? "";
+      img.alt = this.product?.Name ?? "Product image";
+    }
 
-    document.querySelector(".product__description").innerHTML =
-      this.product.DescriptionHtmlSimple ?? "";
+    const priceEl = document.querySelector(".product-card__price");
+    if (priceEl) {
+      const final = Number(this.product?.FinalPrice ?? 0);
+      priceEl.textContent = `$${final.toFixed(2)}`;
+    }
 
-    // optional: set page title + button data-id
-    document.title = this.product.Name ?? "Product Details";
-    document.getElementById("addToCart").dataset.id = this.product.Id ?? "";
+    const colorEl = document.querySelector(".product__color");
+    if (colorEl) colorEl.textContent = this.product?.Colors?.[0]?.ColorName ?? "";
+
+    const descEl = document.querySelector(".product__description");
+    if (descEl) descEl.innerHTML = this.product?.DescriptionHtmlSimple ?? "";
+
+    // Discount flag (requires an element with id="discount-flag" in the HTML)
+    const flag = document.querySelector("#discount-flag");
+    if (flag) {
+      const retail = Number(this.product?.SuggestedRetailPrice);
+      const final = Number(this.product?.FinalPrice);
+
+      if (Number.isFinite(retail) && Number.isFinite(final) && retail > final) {
+        const percentOff = Math.round((1 - final / retail) * 100);
+        const amountOff = (retail - final).toFixed(2);
+        flag.textContent = `Discount: -${percentOff}% (Save $${amountOff})`;
+      } else {
+        flag.textContent = "";
+      }
+    }
+
+    // optional: set page title
+    document.title = this.product?.Name ?? "Product Details";
   }
 }

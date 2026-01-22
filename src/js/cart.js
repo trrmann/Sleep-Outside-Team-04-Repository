@@ -1,10 +1,31 @@
-import { getLocalStorage, setLocalStorage, updateCartCount, loadHeaderFooter } from "./utils.mjs";
+import {
+  getLocalStorage,
+  setLocalStorage,
+  updateCartCount,
+  loadHeaderFooter,
+  initSearchForm,
+  renderBreadcrumbs,
+} from "./utils.mjs";
 
 await loadHeaderFooter(updateCartCount);
+updateCartCount();
+initSearchForm();
+renderBreadcrumbs();
+
+
+function getItemQty(item) {
+  const raw = item?.quantity ?? item?.Quantity ?? 1;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+function setItemQty(item, qty) {
+  return { ...item, quantity: qty, Quantity: qty };
+}
 
 function cartItemTemplate(item) {
-  const qty = Number(item.Quantity || 1);
-  const price = Number(item.FinalPrice || 0);
+  const qty = getItemQty(item);
+  const price = Number(item?.FinalPrice ?? 0);
   const lineTotal = price * qty;
 
   return `
@@ -16,11 +37,24 @@ function cartItemTemplate(item) {
       </a>
 
       <a href="/product_pages/?product=${item.Id}">
-        <h2 class="card__name">${item.Name}</h2>
+        <h2 class="card__name">${item.Name ?? ""}</h2>
       </a>
 
-      <p class="cart-card__color">${item.Colors?.[0]?.ColorName ?? "N/A"}</p>
-      <p class="cart-card__quantity">qty: ${qty}</p>
+      <p class="cart-card__color">${item?.Colors?.[0]?.ColorName ?? "N/A"}</p>
+
+      <label class="cart-card__quantity" aria-label="Quantity">
+        qty:
+        <input
+          class="qty-input"
+          type="number"
+          min="1"
+          step="1"
+          value="${qty}"
+          data-id="${item.Id}"
+          inputmode="numeric"
+        />
+      </label>
+
       <p class="cart-card__price">$${lineTotal.toFixed(2)}</p>
     </li>
   `;
@@ -37,35 +71,60 @@ function getCartItemImage(item) {
   );
 }
 
-
-
 function renderCartContents() {
   const cart = getLocalStorage("so-cart") || [];
   const productList = document.querySelector(".product-list");
   const cartFooter = document.querySelector(".cart-footer");
   const cartTotalEl = document.querySelector(".cart-total");
 
+  if (!productList) return;
+
   if (!cart.length) {
     productList.innerHTML = "<p class='cart-empty'>Your cart is empty.</p>";
-    cartFooter.classList.add("hide");
+    if (cartFooter) cartFooter.classList.add("hide");
     return;
   }
 
   productList.innerHTML = cart.map(cartItemTemplate).join("");
+
   attachRemoveListeners();
+  attachQuantityHandlers(cart);
 
-  // Calculate and display total
   const total = calculateCartTotal(cart);
-  cartTotalEl.textContent = `Total: $${total.toFixed(2)}`;
-  cartFooter.classList.remove("hide");
+  if (cartTotalEl) cartTotalEl.textContent = `Total: $${total.toFixed(2)}`;
+  if (cartFooter) cartFooter.classList.remove("hide");
 }
-
 
 function attachRemoveListeners() {
   document.querySelectorAll(".cart-remove").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const id = e.currentTarget.dataset.id;
       removeFromCart(id);
+    });
+  });
+}
+
+function attachQuantityHandlers(cartItems) {
+  document.querySelectorAll(".qty-input").forEach((input) => {
+    input.addEventListener("change", (e) => {
+      const id = e.currentTarget.dataset.id;
+      const nextQty = Math.max(1, parseInt(e.currentTarget.value, 10) || 1);
+
+      const updated = cartItems.map((item) => {
+        if (String(item.Id) === String(id)) {
+          return setItemQty(item, nextQty);
+        }
+        return item;
+      });
+
+      setLocalStorage("so-cart", updated);
+      updateCartCount();
+      renderCartContents();
+    });
+
+    // Optional: make Enter commit the value
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") e.currentTarget.blur();
     });
   });
 }
@@ -80,12 +139,11 @@ function removeFromCart(productId) {
 
 function calculateCartTotal(cartItems) {
   return cartItems.reduce((sum, item) => {
-    const qty = Number(item.Quantity || 1);
-    const price = Number(item.FinalPrice || 0);
+    const qty = getItemQty(item);
+    const price = Number(item?.FinalPrice ?? 0);
     return sum + price * qty;
   }, 0);
 }
-
 
 // Initial render
 renderCartContents();
