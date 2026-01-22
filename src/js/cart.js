@@ -11,11 +11,11 @@ function cartItemTemplate(item) {
     <li class="cart-card divider">
       <button class="cart-remove" data-id="${item.Id}" aria-label="Remove item">×</button>
 
-      <a href="../product_pages/?product=${item.Id}" class="cart-card__image">
-        <img src="${item.Image}" alt="${item.Name}" />
+      <a href="/product_pages/?product=${item.Id}" class="cart-card__image">
+        <img src="${getCartItemImage(item)}" alt="${item.Name ?? "Product"}" />
       </a>
 
-      <a href="../product_pages/?product=${item.Id}">
+      <a href="/product_pages/?product=${item.Id}">
         <h2 class="card__name">${item.Name}</h2>
       </a>
 
@@ -25,6 +25,18 @@ function cartItemTemplate(item) {
     </li>
   `;
 }
+
+function getCartItemImage(item) {
+  return (
+    item?.Images?.PrimaryMedium ||
+    item?.Images?.PrimaryLarge ||
+    item?.PrimaryMedium ||
+    item?.PrimaryLarge ||
+    item?.Image ||
+    ""
+  );
+}
+
 
 
 function renderCartContents() {

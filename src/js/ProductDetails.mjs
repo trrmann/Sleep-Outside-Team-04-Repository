@@ -46,8 +46,15 @@ export default class ProductDetails {
       this.product.NameWithoutBrand ?? this.product.Name ?? "";
 
     const img = document.querySelector(".product-image");
-    img.src = this.product.Image;
+    img.src =
+      this.product?.Images?.PrimaryLarge ||
+      this.product?.Images?.PrimaryMedium ||
+      this.product?.PrimaryLarge ||
+      this.product?.PrimaryMedium ||
+      this.product?.Image ||
+      "";
     img.alt = this.product.Name ?? "Product image";
+
 
     document.querySelector(".product-card__price").textContent =
       `$${Number(this.product.FinalPrice).toFixed(2)}`;
