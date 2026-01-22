@@ -215,6 +215,56 @@ button {
   text-align: center;
 }
 
+.categories {
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.categories-list {
+  display: flex;
+  flex-direction: row;
+  gap: 9rem;
+  list-style-type: none;
+}
+
+.categories-list > * {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.categories-list img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.categories-list h3,
+.categories-list .category-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.categories-list a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.categories {
+  min-width: 11rem;
+  width: 25%;
+}
+
+.categories > h2 {
+  text-align: center;
+}
+
 .products {
   margin-top: 2rem;
   padding: 1rem;

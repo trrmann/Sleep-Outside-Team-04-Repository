@@ -34,14 +34,23 @@ export default class ProductList {
   }
 
   async init() {
-    this.list = await this.dataSource.getData();
+    this._list = await this.dataSource.getData();
   }
-
-  renderList(list = this.list) {
-    const parent = document.querySelector(this.listElement);
-    if (!parent) return;
-
-    const topProducts = Array.isArray(list) ? list.filter((p) => p.Top === true) : [];
-    renderListWithTemplate(productCardTemplate, parent, topProducts, "afterbegin", true);
-  }
+  productCardTemplate(product) {
+    return `
+          <li class="product-card">
+            <a href="product_pages/index.html?id=${product.Id}">
+              <img
+                src="${product.Image}"
+                alt="${product.Name}"
+              />
+              <h3 class="card__brand">${product.Brand.Name}</h3>
+              <h2 class="card__name">${product.NameWithoutBrand}</h2>
+              <p class="product-card__price">$${product.FinalPrice}</p>
+            </a>
+          </li>`
+        };
+    renderList() {
+      renderListWithTemplate(this.productCardTemplate, this.listElement, this.list.filter(function (product) {return product.Top === true;}), "afterbegin");
+    }
 }
