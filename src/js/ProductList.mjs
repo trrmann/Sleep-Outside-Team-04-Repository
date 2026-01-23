@@ -1,4 +1,3 @@
-// src/js/ProductList.mjs
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
@@ -15,21 +14,25 @@ function productCardTemplate(product) {
 
   const medium = product?.Images?.PrimaryMedium || product?.PrimaryMedium || "";
   const large = product?.Images?.PrimaryLarge || product?.PrimaryLarge || "";
-  const fallback = getProductImage(product);
+  const fallback =
+    product?.Images?.PrimaryMedium ||
+    product?.Images?.PrimaryLarge ||
+    product?.PrimaryMedium ||
+    product?.PrimaryLarge ||
+    product?.Image ||
+    "";
 
   return `
     <li class="product-card">
-      <a href="/product_pages/?product=${product.Id}">
+      <a href="/product_pages/index.html?product=${product.Id}">
         ${isDiscounted ? `<span class="discount-badge">-${percentOff}%</span>` : ""}
-
         <img
           src="${medium || fallback}"
           srcset="${medium ? `${medium} 600w,` : ""} ${large ? `${large} 1200w` : ""}".trim()
           sizes="(max-width: 600px) 600px, 1200px"
-          alt="${product.Name ?? "Product image"}"
+          alt="${product?.Name ?? "Product image"}"
           loading="lazy"
         />
-
         <h3 class="card__brand">${product?.Brand?.Name ?? product?.Brand ?? ""}</h3>
         <h2 class="card__name">${product?.NameWithoutBrand ?? product?.Name ?? ""}</h2>
         <p class="product-card__price">$${final.toFixed(2)}</p>
@@ -38,23 +41,11 @@ function productCardTemplate(product) {
   `;
 }
 
-function getProductImage(product) {
-  // API response includes Images with PrimaryMedium/PrimaryLarge
-  return (
-    product?.Images?.PrimaryMedium ||
-    product?.Images?.PrimaryLarge ||
-    product?.PrimaryMedium ||
-    product?.PrimaryLarge ||
-    product?.Image ||
-    ""
-  );
-}
-
 export default class ProductList {
-  constructor(category, dataSource, listElement) {
+  constructor(category, dataSource, listSelector) {
     this.category = category;
     this.dataSource = dataSource;
-    this.listElement = listElement; // selector string, e.g. ".product-list"
+    this.listSelector = listSelector;
     this.list = [];
   }
 
@@ -63,16 +54,10 @@ export default class ProductList {
   }
 
   renderList(list = this.list) {
-    const parent = document.querySelector(this.listElement);
+    const parent = document.querySelector(this.listSelector);
     if (!parent) return;
 
     const safeList = Array.isArray(list) ? list : [];
-    renderListWithTemplate(
-      productCardTemplate,
-      parent,
-      safeList,
-      "afterbegin",
-      true
-    );
+    renderListWithTemplate(productCardTemplate, parent, safeList, "afterbegin", true);
   }
 }
