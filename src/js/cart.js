@@ -12,7 +12,6 @@ updateCartCount();
 initSearchForm();
 renderBreadcrumbs();
 
-
 function getItemQty(item) {
   const raw = item?.quantity ?? item?.Quantity ?? 1;
   const n = parseInt(raw, 10);

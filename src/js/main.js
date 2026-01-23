@@ -5,6 +5,5 @@ await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 
-
 const alert = new Alert();
 await alert.init();

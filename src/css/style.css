@@ -180,7 +180,6 @@ button {
   line-height: 1;
 }
 
-
 .cart-remove:hover {
   color: #d32f2f; /* red on hover */
   transform: scale(1.2);
@@ -443,7 +442,6 @@ footer {
 .hide {
   display: none;
 }
-
 
 /* Badge Css */
 .discount-badge {

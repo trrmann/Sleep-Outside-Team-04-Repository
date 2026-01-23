@@ -1,4 +1,10 @@
-import { getParam, loadHeaderFooter, updateCartCount, initSearchForm, renderBreadcrumbs } from "./utils.mjs";
+import {
+  getParam,
+  loadHeaderFooter,
+  updateCartCount,
+  initSearchForm,
+  renderBreadcrumbs,
+} from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 import ProductList from "./ProductList.mjs";
 
@@ -11,7 +17,11 @@ const category = getParam("category");
 const search = getParam("search");
 
 const dataSource = new ProductData();
-const listUI = new ProductList(category || "tents", dataSource, ".product-list");
+const listUI = new ProductList(
+  category || "tents",
+  dataSource,
+  ".product-list",
+);
 
 // Load data (category OR search)
 let products = [];
@@ -21,7 +31,10 @@ if (search) {
 } else {
   const safeCategory = category || "tents";
   products = await dataSource.getData(safeCategory);
-  setPageTitle(`Top Products: ${formatCategoryLabel(safeCategory)}`, products.length);
+  setPageTitle(
+    `Top Products: ${formatCategoryLabel(safeCategory)}`,
+    products.length,
+  );
 }
 
 listUI.list = Array.isArray(products) ? products : [];
@@ -42,8 +55,8 @@ function sortProducts(items, sortBy) {
   if (sortBy === "name") {
     arr.sort((a, b) =>
       String(a?.NameWithoutBrand ?? a?.Name ?? "").localeCompare(
-        String(b?.NameWithoutBrand ?? b?.Name ?? "")
-      )
+        String(b?.NameWithoutBrand ?? b?.Name ?? ""),
+      ),
     );
   } else if (sortBy === "price") {
     arr.sort((a, b) => Number(a?.FinalPrice ?? 0) - Number(b?.FinalPrice ?? 0));
