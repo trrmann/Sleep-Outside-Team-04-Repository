@@ -120,5 +120,29 @@ export default class ProductDetails {
 
     // optional: set page title
     document.title = this.product?.Name ?? "Product Details";
+
+     //comments logic
+  let myCommentList = [] ;
+  const button = document.getElementById("addComment");
+  button.addEventListener("click", function(){
+  const inputFieldName  = document.createElement("input");
+  inputFieldName.type = "text";
+  inputFieldName.id = "userName";
+  inputFieldName.placeholder = "Please write your name here...";
+  const inputFieldOpinion = document.createElement("input");
+  inputFieldOpinion.type = "text";
+  inputFieldOpinion.id = "userOpinion";
+  inputFieldOpinion.placeholder = "Please write your opinion for  this product here..."
+  
+  let singleComment = new Comment(inputFieldName,inputFieldOpinion);
+
+  myCommentList.Add(singleComment);
+
+  });  
+
+  let parentElement = document.getElementById("product-comment");  
+
+  parentElement.appendChild(myCommentList);
+
   }
 }
