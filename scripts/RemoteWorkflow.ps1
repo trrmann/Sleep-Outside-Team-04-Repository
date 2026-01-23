@@ -1,12 +1,11 @@
 # RemoteWorkflow.ps1
-# Runs Install, Lint, Format, Build, Preview, Commit, and Push scripts in order for remote deployment
+# Runs Install, Lint, Format, Build, and tests production proxy server before commit/push
 
 $steps = @(
     @{ Name = "Install"; Script = "Install.ps1" },
     @{ Name = "Lint"; Script = "Lint.ps1" },
     @{ Name = "Format"; Script = "Format.ps1" },
-    @{ Name = "Build"; Script = "Build.ps1" },
-    @{ Name = "Preview"; Script = "Preview.ps1" }
+    @{ Name = "Build"; Script = "Build.ps1" }
 )
 
 foreach ($step in $steps) {
@@ -17,9 +16,24 @@ foreach ($step in $steps) {
         Write-Error "Step '$($step.Name)' failed. Exiting workflow."
         exit $LASTEXITCODE
     }
-    if ($step.Name -eq "Preview") {
-        Write-Host "Preview completed. You may close the preview window."
-    }
+}
+
+# Test production proxy server
+Write-Host "`nTesting production proxy server..."
+Write-Host "Starting proxy server in a new PowerShell window..."
+$projectRoot = $PSScriptRoot | Split-Path -Parent
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command", "cd '$projectRoot'; npm run serve" -WindowStyle Normal
+
+Write-Host "Proxy server started on http://localhost:3000"
+Write-Host "Opening browser for testing..."
+Start-Sleep -Seconds 2
+Start-Process "http://localhost:3000"
+
+Write-Host "`nTest the application, then close the server window when done."
+$continue = Read-Host "Press Enter when ready to commit and push (or type 'exit' to cancel)"
+if ($continue -eq "exit") {
+    Write-Host "Workflow cancelled."
+    exit 0
 }
 
 # Commit step
@@ -44,3 +58,4 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Remote workflow completed successfully."
+Write-Host "Changes pushed to GitHub. Render will auto-deploy with proxy server."

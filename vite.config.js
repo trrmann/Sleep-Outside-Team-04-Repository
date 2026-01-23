@@ -16,4 +16,14 @@ export default defineConfig({
       },
     },
   },
+
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://wdd330-backend.onrender.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });

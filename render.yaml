@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sleep-outside-team-04
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run serve
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: BACKEND_URL
+        value: https://wdd330-backend.onrender.com
+      - key: PORT
+        sync: false
