@@ -32,6 +32,14 @@ export default class ProductDetails {
       btn.addEventListener("click", this.addProductToCart.bind(this));
       btn.dataset.id = this.product?.Id ?? "";
     }
+
+    // --- Wishlist button setup ---
+    const wishBtn = document.getElementById("addToWishlist");
+    if (wishBtn) {
+      wishBtn.addEventListener("click", this.addProductToWishlist.bind(this));
+      wishBtn.dataset.id = this.product?.Id ?? "";
+    }
+
   }
 
   addProductToCart() {
@@ -56,6 +64,23 @@ export default class ProductDetails {
     setLocalStorage("so-cart", cart);
     updateCartCount();
   }
+
+  addProductToWishlist() {
+  const wishlist = getLocalStorage("so-wishlist") || [];
+
+  const exists = wishlist.some(
+    (item) => String(item.Id) === String(this.product.Id)
+  );
+
+  if (!exists) {
+    wishlist.push(this.product);
+    setLocalStorage("so-wishlist", wishlist);
+    alert(`${this.product.Name ?? "Item"} added to wishlist!`);
+  } else {
+    alert("This item is already in your wishlist.");
+  }
+}
+
 
   renderProductDetails() {
     // matches src/product_pages/index.html structure

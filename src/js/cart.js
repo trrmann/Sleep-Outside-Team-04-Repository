@@ -30,6 +30,7 @@ function cartItemTemplate(item) {
   return `
     <li class="cart-card divider">
       <button class="cart-remove" data-id="${item.Id}" aria-label="Remove item">×</button>
+      <button class="move-to-wishlist" data-id="${item.Id}" aria-label="Move to wishlist">♡</button>
 
       <a href="/product_pages/?product=${item.Id}" class="cart-card__image">
         <img src="${getCartItemImage(item)}" alt="${item.Name ?? "Product"}" />
@@ -119,6 +120,8 @@ function attachQuantityHandlers(cartItems) {
       setLocalStorage("so-cart", updated);
       updateCartCount();
       renderCartContents();
+      attachWishlistMoveListeners();
+
     });
 
     // Optional: make Enter commit the value
@@ -143,6 +146,36 @@ function calculateCartTotal(cartItems) {
     return sum + price * qty;
   }, 0);
 }
+
+function attachWishlistMoveListeners() {
+  document.querySelectorAll(".move-to-wishlist").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id;
+      moveToWishlist(id);
+    });
+  });
+}
+
+function moveToWishlist(productId) {
+  const cart = getLocalStorage("so-cart") || [];
+  const wishlist = getLocalStorage("so-wishlist") || [];
+
+  const item = cart.find((i) => String(i.Id) === String(productId));
+  if (!item) return;
+
+  // Add if not already in wishlist
+  if (!wishlist.some((w) => String(w.Id) === String(item.Id))) {
+    wishlist.push(item);
+    setLocalStorage("so-wishlist", wishlist);
+  }
+
+  // Remove from cart
+  const updatedCart = cart.filter((i) => String(i.Id) !== String(productId));
+  setLocalStorage("so-cart", updatedCart);
+  updateCartCount();
+  renderCartContents();
+}
+
 
 // Initial render
 renderCartContents();
