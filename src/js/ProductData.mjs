@@ -1,16 +1,19 @@
+async function convertToJson(res) {
+  const data = await res.json().catch(() => null);
 
-function convertToJson(res) {
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error("Bad Response");
-  }
+  if (res.ok) return data;
+
+  // include server message/details if provided
+  throw new Error(
+    `Request failed: ${res.status} ${res.statusText} :: ${JSON.stringify(data)}`
+  );
 }
+
 
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
 export default class ProductData {
-  constructor() { }
+  constructor() {}
 
   async getData(category) {
     const response = await fetch(`${baseURL}products/search/${category}`);
@@ -41,17 +44,21 @@ export default class ProductData {
     });
   }
 
-  /*
-  async searchProducts(term) {
-    const q = encodeURIComponent(term);
-    const response = await fetch(`${baseURL}products/search/${q}`);
-    const data = await convertToJson(response);
-    return data.Result ?? data;
-  }
-*/
   async findProductById(id) {
     const response = await fetch(`${baseURL}product/${id}`);
     const data = await convertToJson(response);
     return data.Result ?? data;
+  }
+
+  // NEW: W04 checkout POST
+  async checkout(payload) {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    };
+
+    const response = await fetch(`${baseURL}checkout`, options);
+    return await convertToJson(response);
   }
 }
