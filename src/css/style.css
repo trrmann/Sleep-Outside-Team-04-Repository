@@ -499,3 +499,37 @@ footer {
   margin: 5px;
 }
 
+/*modal */ 
+
+dialog {
+  border-radius: 5%;
+  background-color: var(--light-grey);
+}
+/*
+#modal{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 10px;
+  background-color: var(--light-grey);
+  border-radius: 5px;
+  margin: 0;
+ min-height: 300px;
+ position: relative;
+}
+ */
+
+.call-to-action-btn {
+  text-align: center;
+}
+
+.close-modal {
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  width: 25px;
+  text-align: center;
+  color: #444;
+  margin-right: 5px;
+  display: inline-block;
+}
