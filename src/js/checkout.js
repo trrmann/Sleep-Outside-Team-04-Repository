@@ -1,4 +1,4 @@
-import { loadHeaderFooter, updateCartCount, initSearchForm } from "./utils.mjs";
+import { loadHeaderFooter, updateCartCount, initSearchForm, alertMessage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 import CheckoutProcess from "./CheckoutProcess.mjs";
 
@@ -33,20 +33,27 @@ if (form) {
     checkoutProcess.calculateOrderTotal();
 
     try {
-      const response = await checkoutProcess.checkout(form);
+      await checkoutProcess.checkout(form);
 
-      console.log("ORDER RESPONSE:", response);
-
-      // Clear cart
+      // clear cart
       localStorage.removeItem("so-cart");
       updateCartCount();
 
-      // Show success modal
-      showSuccessModal();
+      // go to success page
+      window.location.href = "/checkout/success.html";
     } catch (err) {
       console.error("CHECKOUT ERROR:", err);
-      alert(err.message);
+
+      if (err.message) {
+        // server validation errors
+        Object.values(err.message).forEach((msg) => {
+          alertMessage(msg);
+        });
+      } else {
+        alertMessage("Checkout failed. Please try again.");
+      }
     }
+
   });
 }
 

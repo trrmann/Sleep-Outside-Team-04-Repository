@@ -38,13 +38,9 @@ export default class CheckoutProcess {
     // Tax: 6%
     this.tax = this.itemTotal * 0.06;
 
-    // Shipping: $10 first item + $2 each additional (by total quantity)
+    // Shipping: $10 first item + $2 each additional item (by total quantity)
     const totalQty = this.list.reduce((sum, item) => sum + getQty(item), 0);
-    if (totalQty <= 0) {
-      this.shipping = 0;
-    } else {
-      this.shipping = 10 + Math.max(0, totalQty - 1) * 2;
-    }
+    this.shipping = totalQty > 0 ? 10 + Math.max(0, totalQty - 1) * 2 : 0;
 
     this.orderTotal = this.itemTotal + this.tax + this.shipping;
     this.displayOrderTotals();
@@ -63,22 +59,34 @@ export default class CheckoutProcess {
   packageItems(items) {
     return items.map((item) => ({
       id: item.Id,
-      name: item.Name,
+      name: item.NameWithoutBrand ?? item.Name ?? "",
       price: Number(item?.FinalPrice ?? 0),
       quantity: getQty(item),
     }));
   }
 
   async checkout(formElement) {
-    const order = formDataToJSON(formElement);
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const order = formDataToJSON(formElement);
 
-    order.orderDate = new Date().toISOString();
-    order.items = this.packageItems(this.list);
+      // Ensure totals are ready (in case zip change didn't fire)
+      if (!this.orderTotal || this.orderTotal <= 0) {
+        this.calculateOrderTotal();
+      }
 
-    order.orderTotal = this.orderTotal.toFixed(2);
-    order.tax = this.tax.toFixed(2);
-    order.shipping = this.shipping;
+      order.orderDate = new Date().toISOString();
+      order.items = this.packageItems(this.list);
 
-    return await this.services.checkout(order);
+      order.orderTotal = this.orderTotal.toFixed(2);
+      order.tax = this.tax.toFixed(2);
+      order.shipping = this.shipping;
+
+      // Send to API (convertToJson will throw {name, message} on error)
+      return await this.services.checkout(order);
+    } catch (err) {
+      // Let checkout.js decide how to display the error (popup/alerts)
+      throw err;
+    }
   }
 }
