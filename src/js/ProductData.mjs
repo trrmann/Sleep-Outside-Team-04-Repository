@@ -1,12 +1,15 @@
 async function convertToJson(res) {
-  const data = await res.json().catch(() => null);
+  const jsonResponse = await res.json().catch(() => null);
 
-  if (res.ok) return data;
+  if (res.ok) {
+    return jsonResponse;
+  }
 
-  // include server message/details if provided
-  throw new Error(
-    `Request failed: ${res.status} ${res.statusText} :: ${JSON.stringify(data)}`
-  );
+  // Send full error object
+  throw {
+    name: "servicesError",
+    message: jsonResponse,
+  };
 }
 
 
