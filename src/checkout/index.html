@@ -1,26 +1,117 @@
 <!doctype html>
 
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
 
-    <title>Sleep Outside | Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
+  <title>Sleep Outside | Checkout</title>
 
-  <body>
-    <header class="divider" id="main-header"></header>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
 
-    <main class="divider">
-      <section class="products">
-        <h2>Review & Place your Order</h2>
-      </section>
-    </main>
+<body>
+  <header class="divider" id="main-header"></header>
 
-    <script type="module" src="/js/checkout.js"></script>
-    <footer id="main-footer"></footer>
-  </body>
+  <main class="divider">
+    <section class="checkout">
+      <h2>Review & Place your Order</h2>
+
+      <div class="checkout-grid">
+        <form id="checkout-form" novalidate>
+          <fieldset>
+            <legend>Customer</legend>
+
+            <label>
+              First Name
+              <input name="fname" type="text" required />
+            </label>
+
+            <label>
+              Last Name
+              <input name="lname" type="text" required />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Address</legend>
+
+            <label>
+              Street Address
+              <input name="street" type="text" required />
+            </label>
+
+            <label>
+              City
+              <input name="city" type="text" required />
+            </label>
+
+            <label>
+              State
+              <input name="state" type="text" required />
+            </label>
+
+            <label>
+              Zip Code
+              <input name="zip" id="zip" type="text" inputmode="numeric" required />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Payment</legend>
+
+            <label>
+              Credit Card Number
+              <input name="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" required />
+            </label>
+
+            <label>
+              Expiration Date
+              <input name="expiration" type="text" placeholder="MM/YY" autocomplete="cc-exp" required />
+            </label>
+
+            <label>
+              Security Code
+              <input name="code" type="text" inputmode="numeric" autocomplete="cc-csc" required />
+            </label>
+          </fieldset>
+
+          <button type="submit" class="checkout-submit">Checkout</button>
+        </form>
+
+        <aside class="order-summary" id="orderSummary">
+          <h3>Order Summary</h3>
+
+          <p>Subtotal: <strong id="subtotal">$0.00</strong></p>
+          <p>Tax (6%): <strong id="tax">$0.00</strong></p>
+          <p>Shipping: <strong id="shipping">$0.00</strong></p>
+
+          <hr />
+
+          <p>Order Total: <strong id="orderTotal">$0.00</strong></p>
+
+          <p class="summary-note">
+            Tax and shipping are calculated after you enter your Zip Code.
+          </p>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <!-- Checkout Success Modal -->
+  <div id="checkout-modal" class="checkout-modal hidden">
+    <div class="checkout-modal-content">
+      <h3>Order Successful 🎉</h3>
+      <p>Your order has been placed successfully.</p>
+      <p>You will be redirected to the home page shortly.</p>
+      <button id="modal-close-btn">Continue</button>
+    </div>
+  </div>
+
+
+  <script type="module" src="/js/checkout.js"></script>
+  <footer id="main-footer"></footer>
+</body>
+
 </html>

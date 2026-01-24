@@ -52,6 +52,12 @@ export function getParam(param) {
   return urlParams.get(param);
 }
 
+export function getItemQuantity(item) {
+  const raw = item?.quantity ?? item?.Quantity ?? 1;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 export function updateCartCount() {
   const cart = getLocalStorage("so-cart") || [];
   const cartLink = document.querySelector(".cart a");
@@ -64,11 +70,7 @@ export function updateCartCount() {
     cartLink.appendChild(badge);
   }
 
-  const totalQty = cart.reduce(
-    (sum, item) => sum + Number(item.Quantity || 1),
-    0
-  );
-
+  const totalQty = cart.reduce((sum, item) => sum + getItemQuantity(item), 0);
   badge.textContent = totalQty;
 }
 
@@ -110,12 +112,13 @@ export function initSearchForm() {
     if (!q) return;
 
     // redirect to product listing with search param
-    window.location.href = `/product_listing/index.html?search=${encodeURIComponent(q)}`;
+    window.location.href = `/product_listing/index.html?search=${encodeURIComponent(
+      q
+    )}`;
   });
 }
 
 // breadcrumb builder
-
 export function renderBreadcrumbs() {
   const el = document.querySelector("#breadcrumbs");
   if (!el) return;
@@ -128,7 +131,9 @@ export function renderBreadcrumbs() {
     const search = getParam("search");
 
     if (search) {
-      el.innerHTML = `Search → <strong>"${escapeHtml(search)}"</strong> <span data-bc-count></span>`;
+      el.innerHTML = `Search → <strong>"${escapeHtml(
+        search
+      )}"</strong> <span data-bc-count></span>`;
       return;
     }
 
@@ -175,4 +180,12 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-
+// NEW: convert checkout form to JSON payload
+export function formDataToJSON(formElement) {
+  const formData = new FormData(formElement);
+  const json = {};
+  for (const [key, value] of formData.entries()) {
+    json[key] = typeof value === "string" ? value.trim() : value;
+  }
+  return json;
+}

@@ -74,7 +74,7 @@ function renderCartContents() {
   const cart = getLocalStorage("so-cart") || [];
   const productList = document.querySelector(".product-list");
   const cartFooter = document.querySelector(".cart-footer");
-  const cartTotalEl = document.querySelector(".cart-total");
+  const totalAmountEl = document.querySelector(".cart-total-amount");
 
   if (!productList) return;
 
@@ -90,7 +90,8 @@ function renderCartContents() {
   attachQuantityHandlers(cart);
 
   const total = calculateCartTotal(cart);
-  if (cartTotalEl) cartTotalEl.textContent = `Total: $${total.toFixed(2)}`;
+  if (totalAmountEl) totalAmountEl.textContent = total.toFixed(2);
+
   if (cartFooter) cartFooter.classList.remove("hide");
 }
 
@@ -121,7 +122,6 @@ function attachQuantityHandlers(cartItems) {
       renderCartContents();
     });
 
-    // Optional: make Enter commit the value
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") e.currentTarget.blur();
     });
@@ -144,5 +144,4 @@ function calculateCartTotal(cartItems) {
   }, 0);
 }
 
-// Initial render
 renderCartContents();
