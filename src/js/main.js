@@ -7,10 +7,11 @@ import Alert from "./Alert.js";
 await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
-modal();
-
+//modal();
+document.addEventListener('DOMContentLoaded', () => {
+    modal();
+});
 const alert = new Alert();
 await alert.init();
-
 
 

@@ -501,35 +501,43 @@ footer {
 
 /*modal */ 
 
+
 dialog {
   border-radius: 5%;
-  background-color: var(--light-grey);
+  padding: 15px;
+  text-align: center;
+  width: 500px;
+  display: flex;
+  flex-direction: column-reverse;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+
 }
-/*
-#modal{
+
+
+ .modal-header {
+   align-self: flex-end;
+
+ }
+
+ .modal-body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 10px;
-  background-color: var(--light-grey);
-  border-radius: 5px;
-  margin: 0;
- min-height: 300px;
- position: relative;
-}
- */
+ }
+
 
 .call-to-action-btn {
   text-align: center;
 }
 
 .close-modal {
-  background-color: var(--primary-color);
+  background-color: white;
   border-radius: 50%;
-  width: 25px;
+  width: 5px;
   text-align: center;
-  color: #444;
-  margin-right: 5px;
-  display: inline-block;
+  color: #303030;
+  align-self: flex-start;
 }
+

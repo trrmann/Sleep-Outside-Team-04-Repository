@@ -1,4 +1,3 @@
-
 export default function modal(){
 /*
      if (document.readyState === 'loading') {
@@ -8,39 +7,43 @@ export default function modal(){
     }
 */
     function createModal() {
+        
 
         
        //creating modal elements
-       const modalSection = document.getElementById("modal");
-        const modal = document.createElement("dialog");
+        const modalSection = document.getElementById("modal");
+        const myModal = document.createElement("dialog");
+        const modalHeader = document.createElement("div");
         const closeBtn = document.createElement("button");
-        const modalTitle = document.createElement("h3");
+        const modalBody = document.createElement("div"); 
+        modalBody.classList.add("modal-body");
         const modalContent = document.createElement("p");
         const subscribeBtn = document.createElement("button");
-
         
+        modalBody.appendChild(modalContent);
+        modalBody.appendChild(subscribeBtn);
         //adding content to the elements
         closeBtn.classList.add("close-modal");
-        modal.id = "call-to-action";
+        myModal.id = "call-to-action";
         closeBtn.innerHTML= "x";
-        modalTitle.innerHTML = "Register";
-        modalContent.innerHTML = "Sign up to the site and get the member benefits! Write your email bellow and submit to continue with the registration process"
+        modalContent.innerHTML = "Sign up to the site and get the member benefits! Push the button below and continue with the registration process"
         subscribeBtn.innerHTML = "Sign Up"
 
         //appending elements to the html id
 
-        modal.appendChild(closeBtn);
-        modal.appendChild(modalTitle);
-        modal.appendChild(modalContent);
-        modal.appendChild(subscribeBtn);
+        myModal.appendChild(modalContent);
+        myModal.appendChild(subscribeBtn);
+        myModal.appendChild(modalHeader);
+        myModal.appendChild(modalBody);
+        modalHeader.appendChild(closeBtn);
+        modalHeader.classList.add("modal-header");
 
+        modalSection.appendChild(myModal)
 
-        modalSection.appendChild(modal)
-
-        modal.showModal();
+        myModal.showModal();
         //close modal
         closeBtn.addEventListener("click", ()=>{
-            modal.close();
+            myModal.close();
 
         } );
 
@@ -51,6 +54,6 @@ export default function modal(){
  createModal();
 
 
-
-
 }
+
+modal();
