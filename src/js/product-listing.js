@@ -17,7 +17,11 @@ const category = getParam("category");
 const search = getParam("search");
 
 const dataSource = new ProductData();
-const listUI = new ProductList(category || "tents", dataSource, ".product-list");
+const listUI = new ProductList(
+  category || "tents",
+  dataSource,
+  ".product-list",
+);
 
 // Load data (category OR search)
 let products = [];
@@ -27,7 +31,10 @@ if (search) {
 } else {
   const safeCategory = category || "tents";
   products = await dataSource.getData(safeCategory);
-  setPageTitle(`Top Products: ${formatCategoryLabel(safeCategory)}`, products.length);
+  setPageTitle(
+    `Top Products: ${formatCategoryLabel(safeCategory)}`,
+    products.length,
+  );
 }
 
 listUI.list = Array.isArray(products) ? products : [];

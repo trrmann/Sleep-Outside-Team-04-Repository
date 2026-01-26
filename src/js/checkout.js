@@ -1,4 +1,9 @@
-import { loadHeaderFooter, updateCartCount, initSearchForm, alertMessage } from "./utils.mjs";
+import {
+  loadHeaderFooter,
+  updateCartCount,
+  initSearchForm,
+  alertMessage,
+} from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 import CheckoutProcess from "./CheckoutProcess.mjs";
 
@@ -7,7 +12,11 @@ updateCartCount();
 initSearchForm();
 
 const services = new ProductData();
-const checkoutProcess = new CheckoutProcess("so-cart", "#orderSummary", services);
+const checkoutProcess = new CheckoutProcess(
+  "so-cart",
+  "#orderSummary",
+  services,
+);
 checkoutProcess.init();
 
 // Calculate tax/shipping after zip entered
@@ -53,7 +62,6 @@ if (form) {
         alertMessage("Checkout failed. Please try again.");
       }
     }
-
   });
 }
 

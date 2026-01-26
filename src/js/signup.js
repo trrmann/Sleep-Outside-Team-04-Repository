@@ -41,7 +41,9 @@ if (form) {
 
     const name = String(form.name.value || "").trim();
     const address = String(form.address.value || "").trim();
-    const email = String(form.email.value || "").trim().toLowerCase();
+    const email = String(form.email.value || "")
+      .trim()
+      .toLowerCase();
     const password = String(form.password.value || "");
     const passwordConfirm = String(form.passwordConfirm.value || "");
     const avatar = String(form.avatar.value || "").trim();

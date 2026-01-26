@@ -1,4 +1,10 @@
-import { loadHeaderFooter, updateCartCount, initSearchForm, alertMessage, updateWishlistIcon, } from "./utils.mjs";
+import {
+  loadHeaderFooter,
+  updateCartCount,
+  initSearchForm,
+  alertMessage,
+  updateWishlistIcon,
+} from "./utils.mjs";
 import Alert from "./Alert.js";
 import initRegisterCta from "./ctaRegister.mjs";
 
@@ -20,7 +26,9 @@ if (form) {
     e.preventDefault();
 
     const emailEl = document.querySelector("#newsletter-email");
-    const email = String(emailEl?.value || "").trim().toLowerCase();
+    const email = String(emailEl?.value || "")
+      .trim()
+      .toLowerCase();
 
     // browser validation first
     if (!form.checkValidity()) {
@@ -41,11 +49,13 @@ if (form) {
     existing.push({ email, date: new Date().toISOString() });
     localStorage.setItem(key, JSON.stringify(existing));
 
-    alertMessage("Thanks for subscribing! Watch for our next deals email.", false);
+    alertMessage(
+      "Thanks for subscribing! Watch for our next deals email.",
+      false,
+    );
     form.reset();
   });
 }
 
 const alert = new Alert();
 await alert.init();
-

@@ -42,7 +42,9 @@ if (form) {
       return;
     }
 
-    const email = String(form.email.value || "").trim().toLowerCase();
+    const email = String(form.email.value || "")
+      .trim()
+      .toLowerCase();
     const password = String(form.password.value || "").trim();
 
     // ✅ Send both keys to satisfy either backend expectation
@@ -66,7 +68,7 @@ if (form) {
 
       if (!token) {
         throw new Error(
-          "Login succeeded but no token was returned by the server."
+          "Login succeeded but no token was returned by the server.",
         );
       }
 
@@ -75,7 +77,7 @@ if (form) {
       if (statusEl) statusEl.textContent = "";
       alertMessage(
         "Login successful. You can now access protected pages.",
-        false
+        false,
       );
 
       window.location.href = "/index.html";

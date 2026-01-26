@@ -37,7 +37,6 @@ function getColorSwatch(item) {
   return item?.selectedColorSwatch || "";
 }
 
-
 function cartItemTemplate(item) {
   const qty = getItemQty(item);
   const price = Number(item?.FinalPrice ?? 0);
@@ -82,13 +81,10 @@ function cartItemTemplate(item) {
   `;
 }
 
-
 function getCartItemImage(item) {
   // ✅ Prefer selected color swatch/preview image if available
   const colorImage =
-    item?.selectedColorSwatch ||
-    item?.selectedColorImage ||
-    "";
+    item?.selectedColorSwatch || item?.selectedColorImage || "";
 
   if (colorImage) return colorImage;
 
@@ -164,7 +160,7 @@ function attachQuantityHandlers(cartItems) {
 function removeFromCart(lineKey) {
   const cart = getLocalStorage("so-cart") || [];
   const updated = cart.filter(
-    (item) => String(getLineKey(item)) !== String(lineKey)
+    (item) => String(getLineKey(item)) !== String(lineKey),
   );
   setLocalStorage("so-cart", updated);
   updateCartCount();

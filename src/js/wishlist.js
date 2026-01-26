@@ -72,7 +72,8 @@ function renderWishlist() {
 
   if (!list.length) {
     ul.innerHTML = `<p class="cart-empty">Your wishlist is empty.</p>`;
-    if (note) note.textContent = "Browse products and add items to your wishlist.";
+    if (note)
+      note.textContent = "Browse products and add items to your wishlist.";
     return;
   }
 

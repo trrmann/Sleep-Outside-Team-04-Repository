@@ -480,29 +480,27 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap:10px;
+  gap: 10px;
   border: 0.2px solid var(--secondary-color);
   padding: 10px;
   border-radius: 5px;
   max-width: 500px;
   margin: auto;
-
 }
 
 .newsletter:hover {
-   transform: scale(1.1);
+  transform: scale(1.1);
 }
 
-.newsletter-header{
-  flex:1;
+.newsletter-header {
+  flex: 1;
   text-align: center;
 }
 .newsletter-body {
   display: flex;
   flex-direction: row;
 }
-.newsletter-body input{
-  
+.newsletter-body input {
   width: 200px;
   padding: 10px;
   margin: 5px;
@@ -519,7 +517,6 @@ footer {
   white-space: nowrap;
   border: 0;
 }
-
 
 /* Checkout Page Css */
 
@@ -594,7 +591,9 @@ footer {
   cursor: pointer;
   background: #1f2937; /* dark slate */
   color: #fff;
-  transition: transform 0.06s ease, opacity 0.2s ease;
+  transition:
+    transform 0.06s ease,
+    opacity 0.2s ease;
 }
 
 .checkout-submit:hover {
@@ -647,7 +646,9 @@ footer {
   font-weight: 700;
   background: #1f2937;
   color: #fff;
-  transition: transform 0.06s ease, opacity 0.2s ease;
+  transition:
+    transform 0.06s ease,
+    opacity 0.2s ease;
 }
 
 .checkout-button:hover {
@@ -732,7 +733,6 @@ footer {
 .checkout-modal-content button:hover {
   opacity: 0.9;
 }
-
 
 /* =========================
    Custom Alert Messages
@@ -906,7 +906,6 @@ body.modal-open {
   }
 }
 
-
 /* ===============================
    Register CTA Modal (First Visit)
 ================================ */
@@ -1066,7 +1065,9 @@ body.modal-open {
 
 /* Add to the cart icon container */
 .cart-animate {
-  animation: cart-pop 280ms ease-out, cart-shake 420ms ease-in-out;
+  animation:
+    cart-pop 280ms ease-out,
+    cart-shake 420ms ease-in-out;
   transform-origin: center;
 }
 
@@ -1122,7 +1123,9 @@ body.modal-open {
   cursor: pointer;
   background: #1f2937;
   color: #fff;
-  transition: transform 0.06s ease, opacity 0.2s ease;
+  transition:
+    transform 0.06s ease,
+    opacity 0.2s ease;
 }
 
 .auth-submit:hover {

@@ -1,98 +1,133 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
 
-  <title></title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/product.js" type="module"></script>
+  </head>
 
-  <link rel="stylesheet" href="../css/style.css" />
-  <script src="../js/product.js" type="module"></script>
-</head>
+  <body>
+    <header class="divider" id="main-header"></header>
+    <div class="breadcrumbs" id="breadcrumbs"></div>
 
-<body>
-  <header class="divider" id="main-header"></header>
-  <div class="breadcrumbs" id="breadcrumbs"></div>
+    <main class="divider">
+      <section class="product-detail">
+        <h3 class="product-brand"></h3>
+        <h2 class="divider product-name"></h2>
 
-  <main class="divider">
-    <section class="product-detail">
-      <h3 class="product-brand"></h3>
-      <h2 class="divider product-name"></h2>
+        <!-- Product Image Carousel -->
+        <div class="product-image-carousel">
+          <button
+            class="carousel-btn prev"
+            type="button"
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
 
-      <!-- Product Image Carousel -->
-      <div class="product-image-carousel">
-        <button class="carousel-btn prev" type="button" aria-label="Previous image">
-          ‹
-        </button>
+          <img class="divider product-image" src="" alt="" />
 
-        <img class="divider product-image" src="" alt="" />
+          <button
+            class="carousel-btn next"
+            type="button"
+            aria-label="Next image"
+          >
+            ›
+          </button>
 
-        <button class="carousel-btn next" type="button" aria-label="Next image">
-          ›
-        </button>
+          <div
+            class="carousel-thumbs"
+            id="carousel-thumbs"
+            aria-label="Product images"
+          ></div>
+        </div>
 
-        <div class="carousel-thumbs" id="carousel-thumbs" aria-label="Product images"></div>
-      </div>
+        <div class="discount-flag" id="discount-flag"></div>
 
-      <div class="discount-flag" id="discount-flag"></div>
+        <p class="product-card__price">$69.99</p>
 
-      <p class="product-card__price">$69.99</p>
+        <!-- Color Options -->
+        <section class="color-options">
+          <h3 class="color-options__title">Choose a color</h3>
 
-      <!-- Color Options -->
-      <section class="color-options">
-        <h3 class="color-options__title">Choose a color</h3>
+          <p class="color-options__selected">
+            Selected: <span id="selected-color-name">—</span>
+          </p>
 
-        <p class="color-options__selected">
-          Selected: <span id="selected-color-name">—</span>
+          <div
+            id="color-swatches"
+            class="color-swatches"
+            aria-label="Color options"
+          ></div>
+        </section>
+
+        <p class="product__color">Rust/Clay</p>
+
+        <p class="product__description">
+          Lightweight and ready for adventure, this Cedar Ridge Rimrock tent
+          boasts a weather-ready design that includes a tub-style floor and
+          factory-sealed rain fly
         </p>
 
-        <div id="color-swatches" class="color-swatches" aria-label="Color options"></div>
+        <!-- Product Comments -->
+        <section class="comments">
+          <h3>Comments</h3>
+
+          <form id="comment-form" class="comment-form" novalidate>
+            <label>
+              Your Name
+              <input
+                type="text"
+                id="comment-name"
+                name="name"
+                required
+                maxlength="40"
+                placeholder="e.g. Sam"
+                autocomplete="name"
+              />
+            </label>
+
+            <label>
+              Your Comment
+              <textarea
+                id="comment-text"
+                name="comment"
+                required
+                minlength="3"
+                maxlength="400"
+                rows="3"
+                placeholder="Write your comment..."
+              ></textarea>
+            </label>
+
+            <button type="submit">Post Comment</button>
+          </form>
+
+          <ul
+            id="comment-list"
+            class="comment-list"
+            aria-label="Product comments"
+          ></ul>
+        </section>
+
+        <div class="product-detail__add">
+          <button id="addToCart" data-id="">Add to Cart</button>
+          <button
+            id="addToWishlist"
+            class="wishlist-btn"
+            type="button"
+            aria-label="Toggle wishlist"
+          >
+            🤍
+          </button>
+        </div>
       </section>
+    </main>
 
-      <p class="product__color">Rust/Clay</p>
-
-      <p class="product__description">
-        Lightweight and ready for adventure, this Cedar Ridge Rimrock tent
-        boasts a weather-ready design that includes a tub-style floor and
-        factory-sealed rain fly
-      </p>
-
-      <!-- Product Comments -->
-      <section class="comments">
-        <h3>Comments</h3>
-
-        <form id="comment-form" class="comment-form" novalidate>
-          <label>
-            Your Name
-            <input type="text" id="comment-name" name="name" required maxlength="40" placeholder="e.g. Sam"
-              autocomplete="name" />
-          </label>
-
-          <label>
-            Your Comment
-            <textarea id="comment-text" name="comment" required minlength="3" maxlength="400" rows="3"
-              placeholder="Write your comment..."></textarea>
-          </label>
-
-          <button type="submit">Post Comment</button>
-        </form>
-
-        <ul id="comment-list" class="comment-list" aria-label="Product comments"></ul>
-      </section>
-
-
-      <div class="product-detail__add">
-        <button id="addToCart" data-id="">Add to Cart</button>
-        <button id="addToWishlist" class="wishlist-btn" type="button" aria-label="Toggle wishlist">
-          🤍
-        </button>
-
-      </div>
-    </section>
-  </main>
-
-  <footer id="main-footer"></footer>
-</body>
-
+    <footer id="main-footer"></footer>
+  </body>
 </html>
