@@ -25,8 +25,8 @@
     Exit Code: 0 if push succeeds, 1 if push fails
     
     URLs Opened:
-    - Dashboard: https://dashboard.render.com/static/srv-d5ff83ur433s73av55p0
-    - Production: https://sleep-outside-team-04-repository.onrender.com/
+    - Dashboard: https://dashboard.render.com/web/srv-d5rtp2rlr7ts73crn43g/deploys/dep-d5rtqie9bnds738qeo50
+    - Production: https://sleep-outside-team-04-repository-zc3y.onrender.com/
     
     Called automatically by RemoteWorkflow after commit.
     Ensure commits are tested locally before pushing.
@@ -41,8 +41,8 @@ $exitCode = $LASTEXITCODE
 if ($exitCode -eq 0) {
     Write-Host "Push successful."
     # Open Render deploy page and end site in default browser
-    $renderDeployUrl = "https://dashboard.render.com/static/srv-d5ff83ur433s73av55p0"
-    $renderSiteUrl = "https://sleep-outside-team-04-repository.onrender.com/"
+    $renderDeployUrl = "https://dashboard.render.com/web/srv-d5rtp2rlr7ts73crn43g/deploys/dep-d5rtqie9bnds738qeo50"
+    $renderSiteUrl = "https://sleep-outside-team-04-repository-zc3y.onrender.com/"
     Start-Process $renderDeployUrl
     Start-Process $renderSiteUrl
 } else {

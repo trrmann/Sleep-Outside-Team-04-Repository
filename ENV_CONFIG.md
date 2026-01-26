@@ -34,7 +34,7 @@ This project uses environment-specific configuration files for different deploym
 For production to work, the backend server needs to include these headers:
 
 ```
-Access-Control-Allow-Origin: https://sleep-outside-team-04-repository.onrender.com
+Access-Control-Allow-Origin: https://sleep-outside-team-04-repository-zc3y.onrender.com
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type
 ```
