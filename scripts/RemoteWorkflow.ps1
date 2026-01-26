@@ -124,6 +124,17 @@ if ($continue -eq "exit") {
     exit 0
 }
 
+# Check if there are any changes to commit
+Write-Host "`nChecking for changes to commit..."
+git add -A
+$status = git status --porcelain
+if (-not $status) {
+    Write-Host "[INFO] No changes to commit. Workflow completed successfully." -ForegroundColor Yellow
+    Write-Host "Exiting in 5 seconds..."
+    Start-Sleep -Seconds 5
+    exit 0
+}
+
 # Commit step
 $commitScript = Join-Path $PSScriptRoot "Commit.ps1"
 $commitMsg = Read-Host "Enter commit message (leave blank to exit)"
