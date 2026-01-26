@@ -9,5 +9,8 @@ services:
         value: 18
       - key: BACKEND_URL
         value: https://wdd330-backend.onrender.com
+      - key: ALLOW_CORS
+        value: "false"
+        sync: false
       - key: PORT
         sync: false
