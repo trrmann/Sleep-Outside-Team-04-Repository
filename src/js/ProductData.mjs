@@ -16,7 +16,7 @@ async function convertToJson(res) {
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
 export default class ProductData {
-  constructor() {}
+  constructor() { }
 
   async getData(category) {
     const response = await fetch(`${baseURL}products/search/${category}`);
@@ -52,6 +52,43 @@ export default class ProductData {
     const data = await convertToJson(response);
     return data.Result ?? data;
   }
+  // inside export default class ProductData { ... }
+
+  async login(credentials) {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    };
+
+    const response = await fetch(`${baseURL}login`, options);
+    return await convertToJson(response);
+  }
+
+  async registerUser(user) {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    };
+
+    const response = await fetch(`${baseURL}users`, options);
+    return await convertToJson(response);
+  }
+
+
+
+  async getOrders(token) {
+    const options = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await fetch(`${baseURL}orders`, options);
+    return await convertToJson(response);
+  }
+
 
   // NEW: W04 checkout POST
   async checkout(payload) {
