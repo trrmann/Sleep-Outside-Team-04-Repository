@@ -1,4 +1,3 @@
-// src/js/ProductList.mjs
 import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
@@ -17,9 +16,11 @@ function productCardTemplate(product) {
   const large = product?.Images?.PrimaryLarge || product?.PrimaryLarge || "";
   const fallback = getProductImage(product);
 
+  const name = product?.NameWithoutBrand ?? product?.Name ?? "Product";
+
   return `
     <li class="product-card">
-      <a href="/product_pages/?product=${product.Id}">
+      <a class="product-card__link" href="/product_pages/?product=${product.Id}">
         ${isDiscounted ? `<span class="discount-badge">-${percentOff}%</span>` : ""}
 
         <img
@@ -31,9 +32,21 @@ function productCardTemplate(product) {
         />
 
         <h3 class="card__brand">${product?.Brand?.Name ?? product?.Brand ?? ""}</h3>
-        <h2 class="card__name">${product?.NameWithoutBrand ?? product?.Name ?? ""}</h2>
+        <h2 class="card__name">${name}</h2>
         <p class="product-card__price">$${final.toFixed(2)}</p>
       </a>
+
+      <!-- NEW: Quick View action -->
+      <div class="product-card__actions">
+        <button
+          class="quick-view-btn"
+          type="button"
+          data-product-id="${product.Id}"
+          aria-label="Quick view ${name}"
+        >
+          Quick View
+        </button>
+      </div>
     </li>
   `;
 }

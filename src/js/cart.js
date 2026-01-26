@@ -5,12 +5,14 @@ import {
   loadHeaderFooter,
   initSearchForm,
   renderBreadcrumbs,
+  updateWishlistIcon,
 } from "./utils.mjs";
 
 await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 renderBreadcrumbs();
+updateWishlistIcon();
 
 function getItemQty(item) {
   const raw = item?.quantity ?? item?.Quantity ?? 1;
@@ -22,14 +24,32 @@ function setItemQty(item, qty) {
   return { ...item, quantity: qty, Quantity: qty };
 }
 
+function getCartItemColor(item) {
+  return item?.selectedColorName ?? item?.Colors?.[0]?.ColorName ?? "N/A";
+}
+
+function getLineKey(item) {
+  const color = getCartItemColor(item);
+  return item?.lineKey ?? `${item.Id}::${color}`;
+}
+
+function getColorSwatch(item) {
+  return item?.selectedColorSwatch || "";
+}
+
+
 function cartItemTemplate(item) {
   const qty = getItemQty(item);
   const price = Number(item?.FinalPrice ?? 0);
   const lineTotal = price * qty;
 
+  const color = getCartItemColor(item);
+  const lineKey = getLineKey(item);
+  const swatch = getColorSwatch(item);
+
   return `
     <li class="cart-card divider">
-      <button class="cart-remove" data-id="${item.Id}" aria-label="Remove item">×</button>
+      <button class="cart-remove" data-linekey="${lineKey}" aria-label="Remove item">×</button>
 
       <a href="/product_pages/?product=${item.Id}" class="cart-card__image">
         <img src="${getCartItemImage(item)}" alt="${item.Name ?? "Product"}" />
@@ -39,7 +59,10 @@ function cartItemTemplate(item) {
         <h2 class="card__name">${item.Name ?? ""}</h2>
       </a>
 
-      <p class="cart-card__color">${item?.Colors?.[0]?.ColorName ?? "N/A"}</p>
+      <p class="cart-card__color">
+        ${swatch ? `<img class="cart-color-swatch" src="${swatch}" alt="" aria-hidden="true" />` : ""}
+        ${color}
+      </p>
 
       <label class="cart-card__quantity" aria-label="Quantity">
         qty:
@@ -49,7 +72,7 @@ function cartItemTemplate(item) {
           min="1"
           step="1"
           value="${qty}"
-          data-id="${item.Id}"
+          data-linekey="${lineKey}"
           inputmode="numeric"
         />
       </label>
@@ -59,7 +82,17 @@ function cartItemTemplate(item) {
   `;
 }
 
+
 function getCartItemImage(item) {
+  // ✅ Prefer selected color swatch/preview image if available
+  const colorImage =
+    item?.selectedColorSwatch ||
+    item?.selectedColorImage ||
+    "";
+
+  if (colorImage) return colorImage;
+
+  // Fallback to base product images
   return (
     item?.Images?.PrimaryMedium ||
     item?.Images?.PrimaryLarge ||
@@ -98,8 +131,8 @@ function renderCartContents() {
 function attachRemoveListeners() {
   document.querySelectorAll(".cart-remove").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      const id = e.currentTarget.dataset.id;
-      removeFromCart(id);
+      const lineKey = e.currentTarget.dataset.linekey;
+      removeFromCart(lineKey);
     });
   });
 }
@@ -107,11 +140,11 @@ function attachRemoveListeners() {
 function attachQuantityHandlers(cartItems) {
   document.querySelectorAll(".qty-input").forEach((input) => {
     input.addEventListener("change", (e) => {
-      const id = e.currentTarget.dataset.id;
+      const lineKey = e.currentTarget.dataset.linekey;
       const nextQty = Math.max(1, parseInt(e.currentTarget.value, 10) || 1);
 
       const updated = cartItems.map((item) => {
-        if (String(item.Id) === String(id)) {
+        if (String(getLineKey(item)) === String(lineKey)) {
           return setItemQty(item, nextQty);
         }
         return item;
@@ -128,9 +161,11 @@ function attachQuantityHandlers(cartItems) {
   });
 }
 
-function removeFromCart(productId) {
+function removeFromCart(lineKey) {
   const cart = getLocalStorage("so-cart") || [];
-  const updated = cart.filter((item) => String(item.Id) !== String(productId));
+  const updated = cart.filter(
+    (item) => String(getLineKey(item)) !== String(lineKey)
+  );
   setLocalStorage("so-cart", updated);
   updateCartCount();
   renderCartContents();

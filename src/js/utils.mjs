@@ -74,6 +74,29 @@ export function updateCartCount() {
   badge.textContent = totalQty;
 }
 
+export function getWishlist(key = "so-wishlist") {
+  return getLocalStorage(key) || [];
+}
+
+export function setWishlist(list, key = "so-wishlist") {
+  setLocalStorage(key, list);
+}
+
+export function isInWishlist(productId, key = "so-wishlist") {
+  const list = getWishlist(key);
+  return list.some((i) => String(i.Id) === String(productId));
+}
+
+export function updateWishlistIcon() {
+  const link = document.querySelector(".wishlist-link");
+  if (!link) return;
+
+  const list = JSON.parse(localStorage.getItem("so-wishlist") || "[]");
+
+  link.textContent = list.length ? "❤️" : "🤍";
+}
+
+
 export function renderWithTemplate(template, parentElement, data, callback) {
   parentElement.innerHTML = template;
   if (callback) callback(data);
@@ -209,4 +232,43 @@ export function alertMessage(message, scroll = true) {
   if (main) main.prepend(alert);
 
   if (scroll) window.scrollTo(0, 0);
+}
+
+export function animateCartIcon() {
+  // Header cart link should exist after loadHeaderFooter()
+  const cartLink = document.querySelector(".cart a");
+  if (!cartLink) return;
+
+  // remove if already there so it can replay
+  cartLink.classList.remove("cart-animate");
+
+  // force reflow to restart animation reliably
+  void cartLink.offsetWidth;
+
+  cartLink.classList.add("cart-animate");
+
+  // cleanup after animation ends
+  setTimeout(() => {
+    cartLink.classList.remove("cart-animate");
+  }, 700);
+}
+
+export function getProductComments(productId) {
+  const all = JSON.parse(localStorage.getItem("so-comments") || "{}");
+  return Array.isArray(all?.[productId]) ? all[productId] : [];
+}
+
+export function saveProductComment(productId, comment) {
+  const all = JSON.parse(localStorage.getItem("so-comments") || "{}");
+  const list = Array.isArray(all?.[productId]) ? all[productId] : [];
+  all[productId] = [comment, ...list];
+  localStorage.setItem("so-comments", JSON.stringify(all));
+}
+
+export function formatDateTime(iso) {
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
+  }
 }

@@ -4,6 +4,7 @@ import {
   getParam,
   initSearchForm,
   renderBreadcrumbs,
+  updateWishlistIcon,
 } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 import ProductDetails from "./ProductDetails.mjs";
@@ -12,6 +13,7 @@ await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 renderBreadcrumbs();
+updateWishlistIcon();
 
 const dataSource = new ProductData();
 const productId = getParam("product");
