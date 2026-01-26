@@ -19,11 +19,15 @@ This project uses environment-specific configuration files for different deploym
 - The proxy is configured in `vite.config.js`
 
 ### Production (Deployed)
-- Uses `.env.production`
-- API URL: `https://wdd330-backend.onrender.com/`
-- Makes direct requests to the backend
-- **IMPORTANT**: Backend must have CORS configured to allow requests from your production domain
- - Production deployed via Render uses a server-side proxy (`server.js`) to forward `/api/*` to `BACKEND_URL` and avoid browser CORS. Set `BACKEND_URL` and `BACKEND_API_TOKEN` (secret) in Render's environment settings. Do NOT commit `BACKEND_API_TOKEN` to the repo.
+
+- Uses `.env.production` for build-time values.
+- Frontend build-time API base: `VITE_SERVER_URL=/api/` (the production build expects to use the server proxy at `/api/`).
+- The production site is deployed as a Node Web Service that serves `dist/` and proxies `/api/*` to the backend via `server.js` so browsers do not encounter CORS.
+- Set `BACKEND_URL` in your host (Render) environment to point to the backend API (for example `https://wdd330-backend.onrender.com`).
+- If your backend requires a service token, set `BACKEND_API_TOKEN` as a secret in Render's environment settings; do NOT commit this token into the repo.
+- Recommended Node runtime on Render: set `NODE_VERSION` to `20.x`.
+
+**Important**: You should not need to configure CORS on the backend when the proxy is used. If you are not using the proxy, the backend must allow requests from your production domain.
 
 ## CORS Configuration Required
 

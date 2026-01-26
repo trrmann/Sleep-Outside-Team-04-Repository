@@ -8,6 +8,8 @@ This setup uses a Node.js Express server to proxy API requests in production, el
 2. **Server**: Express serves the static files and proxies `/api/*` requests to the backend
 3. **No CORS Issues**: Requests are server-side, so CORS doesn't apply
 
+> Important: Configure the Render service as a **Web Service** (not a Static Site) so the Node `server.js` process runs and the proxy is active. Use `npm run serve` as the start command (or `node server.js`).
+
 ## Files
 
 - **[server.js](server.js)** - Express server that serves static files and proxies API requests
@@ -24,7 +26,7 @@ Set these in your Render dashboard (Environment tab). Do NOT store secrets in th
 | `VITE_SERVER_URL` | `/api/` | Frontend build-time API base. Use `/api/` when using the server proxy.
 | `BACKEND_API_TOKEN` | *secret* (set in Render only) | Optional service token forwarded by the proxy to backend when client Authorization is absent
 | `ALLOW_CORS` | `false` | Optional flag to enable CORS middleware for debugging (set `true` only temporarily)
-| `NODE_VERSION` | `18` | Node runtime to use for build/start
+| `NODE_VERSION` | `20.x` | Node runtime to use for build/start (recommended)
 
 **Note**: `PORT` is provided by Render at runtime; `server.js` falls back to `3000` locally.
 

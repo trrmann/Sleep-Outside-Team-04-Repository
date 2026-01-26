@@ -21,6 +21,17 @@
 - `npm run start` starts up a local server and updates on any JS or CSS/SCSS.
 - `npm run build` to build final files when you are ready to turn in.
 
+## Deployment (Render)
+
+This project is deployed as a Node Web Service on Render that serves the Vite `dist/` build and proxies `/api/*` to the backend to avoid browser CORS issues.
+
+- Build command: `npm install && npm run build`
+- Start command: `npm run serve` (runs `node server.js`)
+- Required Render environment variables: `BACKEND_URL`, `VITE_SERVER_URL=/api/` and (optional secret) `BACKEND_API_TOKEN` set in Render's dashboard
+- Recommended Node runtime on Render: set `NODE_VERSION` to `20.x`
+
+Do NOT commit any secrets (`BACKEND_API_TOKEN`) to the repo — use Render's environment/secret settings.
+
 > **Note:** This project now uses npm for all dependency management and scripts. Do not use pnpm.
 
 
