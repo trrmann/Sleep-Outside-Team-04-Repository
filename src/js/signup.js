@@ -33,6 +33,7 @@ updateWishlistIcon();
 const form = document.querySelector("#signup-form");
 const statusEl = document.querySelector("#signup-status");
 const toggleBtn = document.querySelector("#toggle-password");
+const toggleConfirmBtn = document.querySelector("#toggle-password-confirm");
 const avatarInput = document.querySelector("#avatar");
 const avatarPreview = document.querySelector("#avatar-preview");
 
@@ -53,7 +54,7 @@ function isStrongPassword(pw) {
   return typeof pw === "string" && pw.length >= 8;
 }
 
-function validateSignupData({ name, address, email, password }) {
+function validateSignupData({ name, address, email, password, passwordConfirm }) {
   // Returns an object of field -> message for any validation failures.
   const errors = {};
   if (!name || String(name).trim().length === 0)
@@ -63,6 +64,8 @@ function validateSignupData({ name, address, email, password }) {
   if (!isValidEmail(email)) errors.email = "Enter a valid email";
   if (!isStrongPassword(password))
     errors.password = "Password must be at least 8 characters";
+  if (password !== passwordConfirm)
+    errors.passwordConfirm = "Passwords do not match";
   return errors;
 }
 
@@ -72,7 +75,7 @@ function validateSignupData({ name, address, email, password }) {
 function clearFieldErrors(root = form) {
   root.querySelectorAll(".field-error").forEach((el) => el.remove());
   root
-    .querySelectorAll("[aria-invalid=\"true\"]")
+    .querySelectorAll("[aria-invalid='true']")
     .forEach((el) => el.removeAttribute("aria-invalid"));
 }
 
@@ -105,6 +108,21 @@ if (toggleBtn) {
     } else {
       pw.type = "password";
       toggleBtn.textContent = "Show";
+    }
+  });
+}
+
+if (toggleConfirmBtn) {
+  // Toggle show/hide for the confirm password input.
+  toggleConfirmBtn.addEventListener("click", () => {
+    const pc = document.querySelector("#password-confirm");
+    if (!pc) return;
+    if (pc.type === "password") {
+      pc.type = "text";
+      toggleConfirmBtn.textContent = "Hide";
+    } else {
+      pc.type = "password";
+      toggleConfirmBtn.textContent = "Show";
     }
   });
 }
@@ -177,9 +195,10 @@ if (form) {
       .trim()
       .toLowerCase();
     const password = String(form.password.value || "");
+    const passwordConfirm = String(form.passwordConfirm?.value || "");
 
     // Run our enhanced validation and show inline errors when present.
-    const errors = validateSignupData({ name, address, email, password });
+    const errors = validateSignupData({ name, address, email, password, passwordConfirm });
     if (Object.keys(errors).length) {
       showFieldErrors(errors);
       return;
@@ -192,6 +211,8 @@ if (form) {
 
       // Use JSON create path; include avatar as base64 data URL if provided.
       const json = formDataToJSON(form);
+      // Don't send the password confirmation to the backend; it's only client-side.
+      if (json.passwordConfirm) delete json.passwordConfirm;
       const avatarFile = avatarInput?.files?.[0];
       if (avatarFile) {
         try {
@@ -233,9 +254,30 @@ if (form) {
         statusEl.classList.add("success");
       }
       alertMessage(msg, false);
-      setTimeout(() => {
-        window.location.href = "/login/index.html";
-      }, 900);
+
+      // Replace auto-redirect with an OK button so users control when to proceed.
+      try {
+        const okId = "signup-ok-btn";
+        const existing = document.getElementById(okId);
+        if (existing) existing.remove();
+        const okBtn = document.createElement("button");
+        okBtn.id = okId;
+        okBtn.className = "auth-submit";
+        okBtn.textContent = "OK";
+        okBtn.addEventListener("click", () => {
+          window.location.href = "/login/index.html";
+        });
+        if (statusEl && statusEl.parentNode) {
+          statusEl.parentNode.insertBefore(okBtn, statusEl.nextSibling);
+          okBtn.focus();
+        } else {
+          // Fallback redirect after 8s if DOM isn't available.
+          setTimeout(() => (window.location.href = "/login/index.html"), 8000);
+        }
+      } catch (ex) {
+        // If anything goes wrong, fall back to a short timeout redirect.
+        setTimeout(() => (window.location.href = "/login/index.html"), 3000);
+      }
     } catch (err) {
       // Network or unexpected error; surface a user-friendly message.
       const netMsg = "Network error while creating account.";

@@ -38,14 +38,17 @@
 
           <label>
             Password
-            <input
-              type="password"
-              name="password"
-              id="password"
-              autocomplete="current-password"
-              required
-              placeholder="Enter your password"
-            />
+            <div class="password-row">
+              <input
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="current-password"
+                required
+                placeholder="Enter your password"
+              />
+              <button type="button" id="toggle-login-password" class="small-btn">Show</button>
+            </div>
           </label>
 
           <p class="auth-note" id="login-status" aria-live="polite"></p>

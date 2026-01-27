@@ -87,6 +87,24 @@
             <small class="form-hint">Minimum 8 characters</small>
           </label>
 
+          <!-- Confirm password field to ensure users typed their intended password. -->
+          <label>
+            Confirm password
+            <div class="password-row">
+              <input
+                type="password"
+                name="passwordConfirm"
+                id="password-confirm"
+                autocomplete="new-password"
+                required
+                placeholder="Re-type your password"
+              />
+              <button type="button" id="toggle-password-confirm" class="small-btn">
+                Show
+              </button>
+            </div>
+          </label>
+
           <!-- Avatar upload (optional). Client shows a preview; if present, form submits multipart/form-data. -->
           <label>
             Avatar (optional)
