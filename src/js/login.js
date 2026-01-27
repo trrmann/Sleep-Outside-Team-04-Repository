@@ -88,3 +88,29 @@ if (form) {
     }
   });
 }
+
+// Support a login button placed outside the form (mobile/layout scenarios)
+const loginBtn = document.querySelector("#login-button");
+if (loginBtn && form) {
+  loginBtn.addEventListener("click", () => {
+    // Use requestSubmit to run form validation and trigger the submit handler
+    if (typeof form.requestSubmit === "function") form.requestSubmit();
+    else form.submit();
+  });
+}
+
+// Show/hide password support for the login page
+const toggleLoginPw = document.querySelector("#toggle-login-password");
+if (toggleLoginPw) {
+  toggleLoginPw.addEventListener("click", () => {
+    const pw = document.querySelector("#password");
+    if (!pw) return;
+    if (pw.type === "password") {
+      pw.type = "text";
+      toggleLoginPw.textContent = "Hide";
+    } else {
+      pw.type = "password";
+      toggleLoginPw.textContent = "Show";
+    }
+  });
+}

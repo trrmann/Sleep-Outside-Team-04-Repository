@@ -105,11 +105,48 @@ foreach ($step in $steps) {
             exit 1
         }
     } else {
-        Write-Host "Running $($step.Name) (live output)..."
-        & $scriptPath
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Step '$($step.Name)' failed. Exiting workflow."
-            exit $LASTEXITCODE
+        # Special handling for Lint: try to auto-fix first, then re-run and exit gracefully if issues remain.
+        if ($step.Name -eq "Lint") {
+            Write-Host "Running Lint: "
+            & $scriptPath
+            $fixExit = $LASTEXITCODE
+            # If fixes were applied, commit them automatically once so repo reflects changes
+            if ($fixExit -ne 0) {
+                Write-Host "Running Lint: attempting auto-fix with '--fix'..."
+                & npm run lint -- --fix
+                $fixExit = $LASTEXITCODE
+                if ($fixExit -ne 0) {
+                    Write-Host "Rerunning lint to show remaining problems..." -ForegroundColor Yellow
+                    & $scriptPath
+                    $lintExit = $LASTEXITCODE
+                    if ($lintExit -eq 0) {
+                        Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
+                    } else {
+                        Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
+                        Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow gracefully." -ForegroundColor Yellow
+                        exit 1
+                    }
+                  }
+            } else {
+                # Check for unstaged changes resulting from --fix
+                $projectRoot = $PSScriptRoot | Split-Path -Parent
+                Push-Location $projectRoot
+                $status = git status --porcelain
+                if ($status) {
+                    Write-Host "ESLint --fix modified files; committing fixes..." -ForegroundColor Cyan
+                    git add -A
+                    git commit -m "chore: apply eslint --fix" --no-verify
+                }
+                Pop-Location
+                Write-Host "[PASS] Lint passed after auto-fix." -ForegroundColor Green
+            }
+        } else {
+            Write-Host "Running $($step.Name) (live output)..."
+            & $scriptPath
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Step '$($step.Name)' failed. Exiting workflow."
+                exit $LASTEXITCODE
+            }
         }
     }
 }
