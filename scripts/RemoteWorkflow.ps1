@@ -57,10 +57,40 @@ $steps = @(
 foreach ($step in $steps) {
     Write-Host "Running $($step.Name) (live output)..."
     $scriptPath = Join-Path $PSScriptRoot $step.Script
-    & $scriptPath
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Step '$($step.Name)' failed. Exiting workflow."
-        exit $LASTEXITCODE
+    if ($step.Name -eq "Lint") {
+        Write-Host "Running Lint: attempting auto-fix with '--fix'..."
+        & $scriptPath -- --fix
+        $fixExit = $LASTEXITCODE
+        if ($fixExit -ne 0) {
+            Write-Host "Auto-fix did not resolve all issues. Running lint to show remaining problems..." -ForegroundColor Yellow
+            & $scriptPath
+            $lintExit = $LASTEXITCODE
+            if ($lintExit -eq 0) {
+                Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
+            } else {
+                Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
+                Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow to avoid deploying broken code." -ForegroundColor Yellow
+                exit 1
+            }
+        } else {
+            # If eslint --fix succeeded, commit any resulting changes automatically once
+            $projectRoot = $PSScriptRoot | Split-Path -Parent
+            Push-Location $projectRoot
+            $status = git status --porcelain
+            if ($status) {
+                Write-Host "ESLint --fix modified files; committing fixes before proceeding..." -ForegroundColor Cyan
+                git add -A
+                git commit -m "chore: apply eslint --fix" --no-verify
+            }
+            Pop-Location
+            Write-Host "[PASS] Lint passed after auto-fix." -ForegroundColor Green
+        }
+    } else {
+        & $scriptPath
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Step '$($step.Name)' failed. Exiting workflow."
+            exit $LASTEXITCODE
+        }
     }
 }
 

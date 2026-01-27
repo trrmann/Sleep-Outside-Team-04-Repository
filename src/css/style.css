@@ -518,6 +518,75 @@ footer {
   border: 0;
 }
 
+/* Signup / Auth card */
+.signup-card {
+  max-width: 520px;
+  margin: 2rem auto;
+  padding: 1.25rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.auth-form input,
+.auth-form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 0.35rem;
+}
+
+.auth-submit {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.password-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.password-row input {
+  flex: 1 1 auto;
+}
+
+.small-btn {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+#avatar-preview img {
+  display: block;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Field error styling */
+.field-error {
+  color: #b00020;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.auth-form input[aria-invalid="true"],
+.auth-form textarea[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
 /* Checkout Page Css */
 
 .checkout {

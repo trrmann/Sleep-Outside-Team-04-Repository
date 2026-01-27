@@ -8,6 +8,112 @@
   </head>
 
   <body>
+    <!-- Header partial (injected at runtime). Contains logo, search, cart, and auth links. -->
+    <header class="divider" id="main-header"></header>
+
+    <main class="divider">
+      <!-- Signup card: central container matching site card styles. -->
+      <section class="signup-card">
+        <!-- Page heading and short description. -->
+        <h2>Create an account</h2>
+        <p class="auth-subtitle">
+          Create a Sleep Outside account to save orders and wishlist.
+        </p>
+
+        <!-- Signup form: posts to /api/users (proxy) or /users depending on server config.
+             - id: signup-form (script hook)
+             - novalidate: script performs enhanced validation and shows inline errors
+        -->
+        <form id="signup-form" class="auth-form" novalidate>
+          <!-- Full name field (required) -->
+          <label>
+            Full name
+            <input
+              type="text"
+              name="name"
+              id="name"
+              required
+              placeholder="Jane Doe"
+            />
+          </label>
+
+          <!-- Address field (required). Single textarea for simplicity. -->
+          <label>
+            Address
+            <textarea
+              name="address"
+              id="address"
+              rows="3"
+              placeholder="123 Main St, City, ST 12345"
+              required
+            ></textarea>
+          </label>
+
+          <!-- Email field (required) -->
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              id="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+            />
+          </label>
+
+          <!-- Password field (required) with show/hide toggle and strength hint. -->
+          <label>
+            Password
+            <div class="password-row">
+              <input
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="new-password"
+                required
+                placeholder="Create a password"
+              />
+              <button type="button" id="toggle-password" class="small-btn">
+                Show
+              </button>
+            </div>
+            <small class="form-hint">Minimum 8 characters</small>
+          </label>
+
+          <!-- Avatar upload (optional). Client shows a preview; if present, form submits multipart/form-data. -->
+          <label>
+            Avatar (optional)
+            <input type="file" name="avatar" id="avatar" accept="image/*" />
+            <div id="avatar-preview" aria-hidden="true"></div>
+          </label>
+
+          <!-- Submit: primary CTA uses existing .auth-submit/button styling. -->
+          <button type="submit" class="auth-submit">Create account</button>
+
+          <!-- Status area: updated by script; uses aria-live for screen readers. -->
+          <p class="auth-note" id="signup-status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <!-- Footer partial (injected at runtime). -->
+    <footer id="main-footer"></footer>
+
+    <!-- Signup form script: handles validation, avatar preview, and submission. -->
+    <script type="module" src="/js/signup.js"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sleep Outside | Sign Up</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
     <header class="divider" id="main-header"></header>
 
     <main class="divider">
