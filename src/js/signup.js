@@ -215,8 +215,9 @@ if (form) {
           (createBody && (createBody.message || JSON.stringify(createBody))) ||
           createText ||
           createRes.statusText;
-        alertMessage(`Sign up failed: ${err}`);
-        if (statusEl) statusEl.textContent = "";
+        const failMsg = `Sign up failed: ${err}`;
+        alertMessage(failMsg);
+        if (statusEl) statusEl.textContent = failMsg;
         return;
       }
 
@@ -225,14 +226,21 @@ if (form) {
       const msg =
         (createBody && (createBody.message || createBody.msg)) ||
         "Account created.";
+      // Show success in both the inline status area and as a transient alert.
+      if (statusEl) {
+        statusEl.textContent = msg;
+        statusEl.classList.remove("error");
+        statusEl.classList.add("success");
+      }
       alertMessage(msg, false);
       setTimeout(() => {
         window.location.href = "/login/index.html";
       }, 900);
     } catch (err) {
       // Network or unexpected error; surface a user-friendly message.
-      alertMessage("Network error while creating account.");
-      if (statusEl) statusEl.textContent = "";
+      const netMsg = "Network error while creating account.";
+      alertMessage(netMsg);
+      if (statusEl) statusEl.textContent = netMsg;
     }
   });
 }
