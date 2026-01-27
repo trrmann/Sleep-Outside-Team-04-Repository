@@ -86,11 +86,9 @@ function clearFieldErrors(root = form) {
     .querySelectorAll("[aria-invalid='true']")
     .forEach((el) => el.removeAttribute("aria-invalid"));
   // Remove visual highlight classes from inputs
-  root
-    .querySelectorAll(".field-required, .field-invalid")
-    .forEach((el) => {
-      el.classList.remove("field-required", "field-invalid");
-    });
+  root.querySelectorAll(".field-required, .field-invalid").forEach((el) => {
+    el.classList.remove("field-required", "field-invalid");
+  });
 }
 
 function showFieldErrors(errors) {

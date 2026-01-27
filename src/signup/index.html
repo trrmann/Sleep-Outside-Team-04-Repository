@@ -38,9 +38,11 @@
               type="text"
               name="name"
               id="name"
+              autocomplete="name"
               required
               placeholder="Jane Doe"
             />
+            <small class="form-hint">Use your full name — browser may autofill</small>
           </label>
 
           <!-- Address field (required). Single textarea for simplicity. -->
@@ -50,9 +52,11 @@
               name="address"
               id="address"
               rows="3"
+              autocomplete="street-address"
               placeholder="123 Main St, City, ST 12345"
               required
             ></textarea>
+            <small class="form-hint">Street address — browser may autofill</small>
           </label>
 
           <!-- Email field (required) -->
@@ -66,6 +70,7 @@
               required
               placeholder="you@example.com"
             />
+            <small class="form-hint">Use an address you control — browser may autofill</small>
           </label>
 
           <!-- Password field (required) with show/hide toggle and strength hint. -->
