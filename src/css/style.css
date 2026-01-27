@@ -587,6 +587,22 @@ footer {
   border-color: #b00020;
 }
 
+/* Highlight required-but-empty fields */
+.auth-form input.field-required,
+.auth-form textarea.field-required {
+  border-color: #e53935;
+  background: #fff6f6;
+  box-shadow: 0 0 0 3px rgba(229, 83, 83, 0.06);
+}
+
+/* Highlight fields that are filled but invalid (format/constraint failures) */
+.auth-form input.field-invalid,
+.auth-form textarea.field-invalid {
+  border-color: #ff9800;
+  background: #fff9f0;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.04);
+}
+
 /* Checkout Page Css */
 
 .checkout {

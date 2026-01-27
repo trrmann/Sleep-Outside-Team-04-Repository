@@ -44,15 +44,16 @@ function isStrongPassword(pw) {
  * Each key maps to a form field name and the value is a user-facing
  * error message suitable for inline display.
  *
- * @param {{name?:any,address?:any,email?:any,password?:any}} param0
+ * @param {{name?:any,address?:any,email?:any,password?:any,passwordConfirm?:any}} param0
  * @returns {{[field:string]:string}}
  */
-function validateSignupData({ name, address, email, password }) {
+function validateSignupData({ name, address, email, password, passwordConfirm }) {
   const errors = {};
   if (!name || String(name).trim().length === 0) errors.name = "Name is required";
   if (!address || String(address).trim().length === 0) errors.address = "Address is required";
   if (!isValidEmail(email)) errors.email = "Valid email is required";
   if (!isStrongPassword(password)) errors.password = "Password must be at least 8 characters";
+  if (password !== passwordConfirm) errors.passwordConfirm = "Passwords do not match";
   return errors;
 }
 

@@ -25,6 +25,7 @@ describe("Signup validation utilities", () => {
       address: "1 Test St",
       email: "jane@example.com",
       password: "password123",
+      passwordConfirm: "password123",
     });
     expect(Object.keys(ok).length).toBe(0);
 
@@ -33,10 +34,12 @@ describe("Signup validation utilities", () => {
       address: "",
       email: "no",
       password: "short",
+      passwordConfirm: "different",
     });
     expect(bad.name).toBeTruthy();
     expect(bad.address).toBeTruthy();
     expect(bad.email).toBeTruthy();
     expect(bad.password).toBeTruthy();
+    expect(bad.passwordConfirm).toBeTruthy();
   });
 });

@@ -34,6 +34,8 @@ const form = document.querySelector("#signup-form");
 const statusEl = document.querySelector("#signup-status");
 const toggleBtn = document.querySelector("#toggle-password");
 const toggleConfirmBtn = document.querySelector("#toggle-password-confirm");
+const pwInput = document.querySelector("#password");
+const pwConfirmInput = document.querySelector("#password-confirm");
 const avatarInput = document.querySelector("#avatar");
 const avatarPreview = document.querySelector("#avatar-preview");
 
@@ -54,7 +56,13 @@ function isStrongPassword(pw) {
   return typeof pw === "string" && pw.length >= 8;
 }
 
-function validateSignupData({ name, address, email, password, passwordConfirm }) {
+function validateSignupData({
+  name,
+  address,
+  email,
+  password,
+  passwordConfirm,
+}) {
   // Returns an object of field -> message for any validation failures.
   const errors = {};
   if (!name || String(name).trim().length === 0)
@@ -77,6 +85,12 @@ function clearFieldErrors(root = form) {
   root
     .querySelectorAll("[aria-invalid='true']")
     .forEach((el) => el.removeAttribute("aria-invalid"));
+  // Remove visual highlight classes from inputs
+  root
+    .querySelectorAll(".field-required, .field-invalid")
+    .forEach((el) => {
+      el.classList.remove("field-required", "field-invalid");
+    });
 }
 
 function showFieldErrors(errors) {
@@ -87,6 +101,7 @@ function showFieldErrors(errors) {
     const input = form.querySelector(`[name="${field}"]`);
     if (!input) continue;
     input.setAttribute("aria-invalid", "true");
+    input.classList.add("field-invalid");
     const err = document.createElement("div");
     err.className = "field-error";
     err.textContent = msg;
@@ -125,6 +140,27 @@ if (toggleConfirmBtn) {
       toggleConfirmBtn.textContent = "Show";
     }
   });
+}
+
+// Keep the confirm-password field in sync with the primary password.
+// Use setCustomValidity so the browser will block submission and
+// `reportValidity()` will show a clear message when they differ.
+function syncPasswordValidity() {
+  if (!pwInput || !pwConfirmInput) return;
+  if (pwConfirmInput.value.length === 0) {
+    pwConfirmInput.setCustomValidity("");
+    return;
+  }
+  if (pwInput.value !== pwConfirmInput.value) {
+    pwConfirmInput.setCustomValidity("Passwords do not match");
+  } else {
+    pwConfirmInput.setCustomValidity("");
+  }
+}
+
+if (pwInput && pwConfirmInput) {
+  pwInput.addEventListener("input", syncPasswordValidity);
+  pwConfirmInput.addEventListener("input", syncPasswordValidity);
 }
 
 /* ---------------- Avatar preview ----------------
@@ -178,6 +214,26 @@ function fileToDataURL(file) {
    Response handling attempts to parse JSON and show friendly messages.
 */
 if (form) {
+  // Live input handlers: remove highlight classes as user types/corrects fields.
+  form.querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("input", () => {
+      // Remove required marker when user adds content
+      if (el.classList.contains("field-required")) {
+        if (!el.required || String(el.value || "").trim().length > 0) {
+          el.classList.remove("field-required");
+        }
+      }
+      // Remove invalid marker when field becomes valid per browser constraints
+      if (el.classList.contains("field-invalid") && el.checkValidity()) {
+        el.classList.remove("field-invalid");
+        // remove adjacent inline error if present
+        const next = el.nextElementSibling;
+        if (next && next.classList.contains("field-error")) next.remove();
+        el.removeAttribute("aria-invalid");
+      }
+    });
+  });
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -185,6 +241,14 @@ if (form) {
 
     // Leverage browser built-in validity checks first (required, type, etc.)
     if (!form.checkValidity()) {
+      // Highlight required or invalid fields clearly for the user.
+      form.querySelectorAll("[required]").forEach((el) => {
+        if (String(el.value || "").trim().length === 0) {
+          el.classList.add("field-required");
+        } else if (!el.checkValidity()) {
+          el.classList.add("field-invalid");
+        }
+      });
       form.reportValidity();
       return;
     }
@@ -198,7 +262,13 @@ if (form) {
     const passwordConfirm = String(form.passwordConfirm?.value || "");
 
     // Run our enhanced validation and show inline errors when present.
-    const errors = validateSignupData({ name, address, email, password, passwordConfirm });
+    const errors = validateSignupData({
+      name,
+      address,
+      email,
+      password,
+      passwordConfirm,
+    });
     if (Object.keys(errors).length) {
       showFieldErrors(errors);
       return;
