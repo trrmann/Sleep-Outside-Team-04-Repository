@@ -58,22 +58,28 @@ foreach ($step in $steps) {
     Write-Host "Running $($step.Name) (live output)..."
     $scriptPath = Join-Path $PSScriptRoot $step.Script
     if ($step.Name -eq "Lint") {
-        Write-Host "Running Lint: attempting auto-fix with '--fix'..."
-        & $scriptPath -- --fix
+        Write-Host "Running Lint: "
+        & $scriptPath
         $fixExit = $LASTEXITCODE
+        # If initial lint found problems, try auto-fix, then re-run to show remaining problems
         if ($fixExit -ne 0) {
-            Write-Host "Auto-fix did not resolve all issues. Running lint to show remaining problems..." -ForegroundColor Yellow
-            & $scriptPath
-            $lintExit = $LASTEXITCODE
-            if ($lintExit -eq 0) {
-                Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
-            } else {
-                Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
-                Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow to avoid deploying broken code." -ForegroundColor Yellow
-                exit 1
+            Write-Host "Running Lint: attempting auto-fix with '--fix'..."
+            & npm run lint -- --fix
+            $fixExit = $LASTEXITCODE
+            if ($fixExit -ne 0) {
+                Write-Host "Auto-fix did not resolve all issues. Running lint to show remaining problems..." -ForegroundColor Yellow
+                & $scriptPath
+                $lintExit = $LASTEXITCODE
+                if ($lintExit -eq 0) {
+                    Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
+                } else {
+                    Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
+                    Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow to avoid deploying broken code." -ForegroundColor Yellow
+                    exit 1
+                }
             }
         } else {
-            # If eslint --fix succeeded, commit any resulting changes automatically once
+            # Check for unstaged changes resulting from --fix (if any) and commit them
             $projectRoot = $PSScriptRoot | Split-Path -Parent
             Push-Location $projectRoot
             $status = git status --porcelain

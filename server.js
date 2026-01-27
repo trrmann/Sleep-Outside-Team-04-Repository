@@ -20,7 +20,7 @@ try {
       let val = m[2];
       // Remove optional surrounding quotes
       if (
-        (val.startsWith("\"") && val.endsWith("\"")) ||
+        (val.startsWith('"') && val.endsWith('"')) ||
         (val.length >= 2 &&
           val.charCodeAt(0) === 39 &&
           val.charCodeAt(val.length - 1) === 39)

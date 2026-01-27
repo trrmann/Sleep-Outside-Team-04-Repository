@@ -107,21 +107,26 @@ foreach ($step in $steps) {
     } else {
         # Special handling for Lint: try to auto-fix first, then re-run and exit gracefully if issues remain.
         if ($step.Name -eq "Lint") {
-            Write-Host "Running Lint: attempting auto-fix with '--fix'..."
-            & $scriptPath -- --fix
+            Write-Host "Running Lint: "
+            & $scriptPath
             $fixExit = $LASTEXITCODE
             # If fixes were applied, commit them automatically once so repo reflects changes
             if ($fixExit -ne 0) {
-                Write-Host "Auto-fix did not resolve all issues. Running lint to show remaining problems..." -ForegroundColor Yellow
-                & $scriptPath
-                $lintExit = $LASTEXITCODE
-                if ($lintExit -eq 0) {
-                    Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
-                } else {
-                    Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
-                    Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow gracefully." -ForegroundColor Yellow
-                    exit 1
-                }
+                Write-Host "Running Lint: attempting auto-fix with '--fix'..."
+                & npm run lint -- --fix
+                $fixExit = $LASTEXITCODE
+                if ($fixExit -ne 0) {
+                    Write-Host "Rerunning lint to show remaining problems..." -ForegroundColor Yellow
+                    & $scriptPath
+                    $lintExit = $LASTEXITCODE
+                    if ($lintExit -eq 0) {
+                        Write-Host "[WARN] Lint reported warnings only after auto-fix; continuing." -ForegroundColor Yellow
+                    } else {
+                        Write-Host "[FAIL] Lint errors remain after attempting --fix." -ForegroundColor Red
+                        Write-Host "Please run 'npm run lint -- --fix' or fix issues manually. Exiting workflow gracefully." -ForegroundColor Yellow
+                        exit 1
+                    }
+                  }
             } else {
                 # Check for unstaged changes resulting from --fix
                 $projectRoot = $PSScriptRoot | Split-Path -Parent
