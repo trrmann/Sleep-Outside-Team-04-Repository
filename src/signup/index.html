@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Sign Up</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Hide the header's login link when viewing the signup page */
+      #main-header .login {
+        display: none !important;
+      }
+    </style>
   </head>
 
   <body>
@@ -104,109 +110,4 @@
     <script type="module" src="/js/signup.js"></script>
   </body>
 </html>
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sleep Outside | Sign Up</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
 
-  <body>
-    <header class="divider" id="main-header"></header>
-
-    <main class="divider">
-      <section class="auth-page">
-        <h2>Create Your Account</h2>
-        <p class="auth-subtitle">
-          Register to qualify for giveaways and track your orders.
-        </p>
-
-        <form id="signup-form" class="auth-form" novalidate>
-          <label>
-            Full Name
-            <input
-              type="text"
-              name="name"
-              id="name"
-              autocomplete="name"
-              required
-              placeholder="Your full name"
-            />
-          </label>
-
-          <label>
-            Address
-            <input
-              type="text"
-              name="address"
-              id="address"
-              autocomplete="street-address"
-              required
-              placeholder="Street, City, State/Region"
-            />
-          </label>
-
-          <label>
-            Email
-            <input
-              type="email"
-              name="email"
-              id="email"
-              autocomplete="email"
-              required
-              placeholder="you@example.com"
-            />
-          </label>
-
-          <label>
-            Password
-            <input
-              type="password"
-              name="password"
-              id="password"
-              autocomplete="new-password"
-              required
-              minlength="6"
-              placeholder="Create a password"
-            />
-          </label>
-
-          <label>
-            Confirm Password
-            <input
-              type="password"
-              name="passwordConfirm"
-              id="passwordConfirm"
-              autocomplete="new-password"
-              required
-              minlength="6"
-              placeholder="Re-enter your password"
-            />
-          </label>
-
-          <!-- Stretch: Avatar (URL) -->
-          <label>
-            Avatar URL (optional)
-            <input
-              type="url"
-              name="avatar"
-              id="avatar"
-              autocomplete="url"
-              placeholder="https://example.com/me.jpg"
-            />
-          </label>
-
-          <button type="submit" class="auth-submit">Create Account</button>
-
-          <p class="auth-note" id="signup-status" aria-live="polite"></p>
-        </form>
-      </section>
-    </main>
-
-    <footer id="main-footer"></footer>
-
-    <script type="module" src="/js/signup.js"></script>
-  </body>
-</html>

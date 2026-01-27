@@ -88,3 +88,13 @@ if (form) {
     }
   });
 }
+
+// Support a login button placed outside the form (mobile/layout scenarios)
+const loginBtn = document.querySelector("#login-button");
+if (loginBtn && form) {
+  loginBtn.addEventListener("click", () => {
+    // Use requestSubmit to run form validation and trigger the submit handler
+    if (typeof form.requestSubmit === "function") form.requestSubmit();
+    else form.submit();
+  });
+}

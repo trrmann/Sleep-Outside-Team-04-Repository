@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Login</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Hide the header's login link when viewing the login page */
+      #main-header .login {
+        display: none !important;
+      }
+    </style>
   </head>
 
   <body>
@@ -12,9 +18,9 @@
 
     <main class="divider">
       <section class="auth-page">
-        <h2>Staff Login</h2>
+        <h2>Login</h2>
         <p class="auth-subtitle">
-          Login is required to review and process incoming orders.
+          Sign in to your Sleep Outside account to manage orders and purchases.
         </p>
 
         <form id="login-form" class="auth-form" novalidate>
@@ -42,11 +48,14 @@
             />
           </label>
 
-          <button type="submit" class="auth-submit">Login</button>
-
           <p class="auth-note" id="login-status" aria-live="polite"></p>
         </form>
-        <p class="auth-link">Don't have an account? <a href="/signup/index.html">Sign Up</a></p>
+        <p class="auth-link">
+          Don't have an account? <a href="/signup/index.html">Sign Up</a>
+        </p>
+        <div class="auth-actions">
+          <button id="login-button" class="auth-submit">Login</button>
+        </div>
       </section>
     </main>
 
