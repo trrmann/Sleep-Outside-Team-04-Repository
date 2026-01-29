@@ -25,9 +25,9 @@ updateCartCount();
 initSearchForm();
 updateWishlistIcon();
 
-// Note: ProductData/service-based registration was removed to keep a
+// Note: ExternalServices/service-based registration was removed to keep a
 // single canonical registration flow in this file. Use `services`
-// from `ProductData` elsewhere if you need a service wrapper.
+// from `ExternalServices` elsewhere if you need a service wrapper.
 
 // Primary DOM nodes used by the signup flow.
 const form = document.querySelector("#signup-form");
@@ -355,7 +355,7 @@ if (form) {
   });
 }
 // NOTE: The file contains an additional registration flow below that
-// integrates with `ProductData.registerUser`. That section appears to be
+// integrates with `ExternalServices.registerUser`. That section appears to be
 // a different approach (service-based) and remains unchanged. If you
 // want, I can consolidate the two flows into one consistent API call.
 

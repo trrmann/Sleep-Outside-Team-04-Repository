@@ -5,7 +5,7 @@ import {
   initSearchForm,
   renderBreadcrumbs,
 } from "./utils.mjs";
-import ProductData from "./ProductData.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import ProductList from "./ProductList.mjs";
 
 await loadHeaderFooter(updateCartCount);
@@ -16,7 +16,7 @@ renderBreadcrumbs();
 const category = getParam("category");
 const search = getParam("search");
 
-const dataSource = new ProductData();
+const dataSource = new ExternalServices();
 const listUI = new ProductList(
   category || "tents",
   dataSource,

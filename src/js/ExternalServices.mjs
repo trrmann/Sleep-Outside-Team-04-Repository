@@ -15,7 +15,7 @@ async function convertToJson(res) {
 
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
-export default class ProductData {
+export default class ExternalServices {
   constructor() { }
 
   async getData(category) {
@@ -52,7 +52,7 @@ export default class ProductData {
     const data = await convertToJson(response);
     return data.Result ?? data;
   }
-  // inside export default class ProductData { ... }
+  // inside export default class ExternalServices { ... }
 
   async login(credentials) {
     const options = {

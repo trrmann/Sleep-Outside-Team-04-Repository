@@ -6,7 +6,7 @@ import {
   alertMessage,
   updateWishlistIcon,
 } from "./utils.mjs";
-import ProductData from "./ProductData.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import { setToken } from "./Auth.mjs";
 
 await loadHeaderFooter(updateCartCount);
@@ -14,7 +14,7 @@ updateCartCount();
 initSearchForm();
 updateWishlistIcon();
 
-const services = new ProductData();
+const services = new ExternalServices();
 
 const form = document.querySelector("#login-form");
 const statusEl = document.querySelector("#login-status");

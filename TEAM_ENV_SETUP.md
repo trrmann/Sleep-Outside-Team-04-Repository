@@ -69,7 +69,7 @@ echo "BACKEND_API_TOKEN=b14f8c6e9a2d4f3a9c1e7b2d5f8a9c0e4b6d3c2a1f0e9d8c7b6a5f4e
 
 | Variable | Dev Value | Production Value | Where Used |
 |----------|-----------|------------------|------------|
-| `VITE_SERVER_URL` | `/api/` | `/api/` | `src/js/ProductData.mjs` |
+| `VITE_SERVER_URL` | `/api/` | `/api/` | `src/js/ExternalServices.mjs` |
 
 ### Backend (Node.js server - `server.js`)
 

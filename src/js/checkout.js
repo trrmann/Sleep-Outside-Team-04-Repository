@@ -4,14 +4,14 @@ import {
   initSearchForm,
   alertMessage,
 } from "./utils.mjs";
-import ProductData from "./ProductData.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import CheckoutProcess from "./CheckoutProcess.mjs";
 
 await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 
-const services = new ProductData();
+const services = new ExternalServices();
 const checkoutProcess = new CheckoutProcess(
   "so-cart",
   "#orderSummary",
