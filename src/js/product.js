@@ -6,7 +6,7 @@ import {
   renderBreadcrumbs,
   updateWishlistIcon,
 } from "./utils.mjs";
-import ProductData from "./ProductData.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import ProductDetails from "./ProductDetails.mjs";
 
 await loadHeaderFooter(updateCartCount);
@@ -15,7 +15,7 @@ initSearchForm();
 renderBreadcrumbs();
 updateWishlistIcon();
 
-const dataSource = new ProductData();
+const dataSource = new ExternalServices();
 const productId = getParam("product");
 
 const productDetails = new ProductDetails(productId, dataSource);

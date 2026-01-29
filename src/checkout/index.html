@@ -22,83 +22,109 @@
           <form id="checkout-form" novalidate>
             <fieldset>
               <legend>Customer</legend>
-
-              <label>
-                First Name
-                <input name="fname" type="text" required />
-              </label>
-
-              <label>
-                Last Name
-                <input name="lname" type="text" required />
-              </label>
+              <label
+                id="checkout-first-name-lable"
+                for="checkout-first-name-input"
+                >First Name</label
+              >
+              <input
+                id="checkout-first-name-input"
+                name="fname"
+                type="text"
+                required
+              />
+              <label
+                id="checkout-last-name-lable"
+                for="checkout-last-name-input"
+                >Last Name</label
+              >
+              <input
+                id="checkout-last-name-input"
+                name="lname"
+                type="text"
+                required
+              />
             </fieldset>
-
             <fieldset>
               <legend>Address</legend>
-
-              <label>
-                Street Address
-                <input name="street" type="text" required />
-              </label>
-
-              <label>
-                City
-                <input name="city" type="text" required />
-              </label>
-
-              <label>
-                State
-                <input name="state" type="text" required />
-              </label>
-
-              <label>
-                Zip Code
-                <input
-                  name="zip"
-                  id="zip"
-                  type="text"
-                  inputmode="numeric"
-                  required
-                />
-              </label>
+              <label id="checkout-address-lable" for="checkout-address-input"
+                >Street Address</label
+              >
+              <input
+                id="checkout-address-input"
+                name="street"
+                type="text"
+                required
+              />
+              <label id="checkout-city-lable" for="checkout-city-input"
+                >City</label
+              >
+              <input
+                id="checkout-city-input"
+                name="city"
+                type="text"
+                required
+              />
+              <label id="checkout-state-lable" for="checkout-state-input"
+                >State</label
+              >
+              <input
+                id="checkout-state-input"
+                name="state"
+                type="text"
+                required
+              />
+              <label id="checkout-zip-lable" for="checkout-zip-input"
+                >Zip Code</label
+              >
+              <input
+                id="checkout-zip-input"
+                name="zip"
+                id="zip"
+                type="text"
+                inputmode="numeric"
+                required
+              />
             </fieldset>
-
             <fieldset>
               <legend>Payment</legend>
-
-              <label>
-                Credit Card Number
-                <input
-                  name="cardNumber"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="cc-number"
-                  required
-                />
-              </label>
-
-              <label>
-                Expiration Date
-                <input
-                  name="expiration"
-                  type="text"
-                  placeholder="MM/YY"
-                  autocomplete="cc-exp"
-                  required
-                />
-              </label>
-
-              <label>
-                Security Code
-                <input
-                  name="code"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="cc-csc"
-                  required
-                />
-              </label>
+              <label
+                id="checkout-card-number-lable"
+                for="checkout-card-number-input"
+                >Credit Card Number</label
+              >
+              <input
+                id="checkout-card-number-input"
+                name="cardNumber"
+                type="text"
+                inputmode="numeric"
+                autocomplete="cc-number"
+                required
+              />
+              <label
+                id="checkout-expiration-lable"
+                for="checkout-expiration-input"
+                >Expiration Date</label
+              >
+              <input
+                id="checkout-expiration-input"
+                name="expiration"
+                type="text"
+                placeholder="MM/YY"
+                autocomplete="cc-exp"
+                required
+              />
+              <label id="checkout-csc-lable" for="checkout-csc-input"
+                >Security Code</label
+              >
+              <input
+                id="checkout-csc-input"
+                name="code"
+                type="text"
+                inputmode="numeric"
+                autocomplete="cc-csc"
+                required
+              />
             </fieldset>
 
             <button type="submit" class="checkout-submit">Checkout</button>

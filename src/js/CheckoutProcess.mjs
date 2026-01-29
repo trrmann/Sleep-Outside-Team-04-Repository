@@ -1,11 +1,5 @@
 import { getLocalStorage, formDataToJSON } from "./utils.mjs";
 
-function getQty(item) {
-  const raw = item?.quantity ?? item?.Quantity ?? 1;
-  const n = parseInt(raw, 10);
-  return Number.isFinite(n) && n > 0 ? n : 1;
-}
-
 export default class CheckoutProcess {
   constructor(key, outputSelector, services) {
     this.key = key;
@@ -89,4 +83,10 @@ export default class CheckoutProcess {
       throw err;
     }
   }
+}
+
+function getQty(item) {
+  const raw = item?.quantity ?? item?.Quantity ?? 1;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
 }

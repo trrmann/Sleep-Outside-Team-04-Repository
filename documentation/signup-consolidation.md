@@ -1,7 +1,7 @@
 Signup flow consolidation
 
 Summary
-- Removed duplicate registration handler in `src/js/signup.js` that used `ProductData.registerUser`.
+- Removed duplicate registration handler in `src/js/signup.js` that used `ExternalServices.registerUser`.
 - Kept the canonical in-file handler which:
   - Validates fields (name, address, email, password)
   - Supports avatar preview and multipart upload when a file is selected
@@ -14,7 +14,7 @@ Why
 - Consolidation simplifies maintenance and ensures a single source of truth for form submission.
 
 Notes
-- If you prefer a service-layer approach (e.g., `ProductData.registerUser`), consider moving the fetch/form-data logic into that service and having the UI call it. For now, UI-level fetch is retained because it handles multipart uploads directly.
+- If you prefer a service-layer approach (e.g., `ExternalServices.registerUser`), consider moving the fetch/form-data logic into that service and having the UI call it. For now, UI-level fetch is retained because it handles multipart uploads directly.
 - For E2E testing, ensure the dev proxy forwards `/api/users` to the backend and injects `BACKEND_API_TOKEN` if required.
 
 Files changed
