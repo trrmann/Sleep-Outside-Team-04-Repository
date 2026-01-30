@@ -1,138 +1,78 @@
 <!doctype html>
 
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sleep Outside | Checkout</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="../js/checkout.js" type="module"></script>
+</head>
 
-    <title>Sleep Outside | Checkout</title>
+<body>
+  <header class="divider" id="main-header"></header>
 
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
+  <main class="divider checkout">
+    <h2>Review & Place your Order</h2>
+    <section class="checkout-form">
+      <form name="checkout">
+        <input type="hidden" name="orderDate" id="orderDate">
 
-  <body>
-    <header class="divider" id="main-header"></header>
+        <fieldset>
+          <legend></legend>
+          <div class="checkout__name">
+            <label for="fname">First Name</label>
+            <input type="text" name="fname" id="fname" required>
+            <label for="lname">Last Name</label>
+            <input type="text" name="lname" id="lname" required>
+          </div>
+          <div class="checkout__address">
+            <label for="street">Street Address</label>
+            <input type="text" name="street" id="street" required>
+            <label for="city">City</label>
+            <input type="text" name="city" id="city" required>
+            <label for="state">State</label>
+            <input type="text" name="state" id="state" required>
+            <label for="zip">Zip</label>
+            <input type="text" name="zip" id="zip" required>
+          </div>
+        </fieldset>
 
-    <main class="divider">
-      <section class="checkout">
-        <h2>Review & Place your Order</h2>
+        <fieldset>
+          <legend>Payment</legend>
+          <div class="checkout__payment">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" name="cardNumber" id="cardNumber" required>
+            <label for="expiration">Expiration</label>
+            <input type="text" name="expiration" id="expiration" required>
+            <label for="code">CVV</label>
+            <input type="text" name="code" id="code" required>
+          </div>
+        </fieldset>
 
-        <div class="checkout-grid">
-          <form id="checkout-form" novalidate>
-            <fieldset>
-              <legend>Customer</legend>
+        <fieldset class="checkout-summary">
+          <legend>Order Summary</legend>
 
-              <label>
-                First Name
-                <input name="fname" type="text" required />
-              </label>
+          <div class="order__summary">
+            <div>Items</div>
+            <div id="num-items"></div>
+            <div>Subtotal</div>
+            <div id="cartTotal"></div>
+            <div>Tax</div>
+            <div id="tax"></div>
+            <div>Shipping</div>
+            <div id="shipping"></div>
+            <div>Total</div>
+            <div id="orderTotal"></div>
+          </div>
+        </fieldset>
+        <button type="submit" id="checkoutSubmit">Checkout</button>
+      </form>
+    </section>
+  </main>
 
-              <label>
-                Last Name
-                <input name="lname" type="text" required />
-              </label>
-            </fieldset>
+  <footer id="main-footer"></footer>
+</body>
 
-            <fieldset>
-              <legend>Address</legend>
-
-              <label>
-                Street Address
-                <input name="street" type="text" required />
-              </label>
-
-              <label>
-                City
-                <input name="city" type="text" required />
-              </label>
-
-              <label>
-                State
-                <input name="state" type="text" required />
-              </label>
-
-              <label>
-                Zip Code
-                <input
-                  name="zip"
-                  id="zip"
-                  type="text"
-                  inputmode="numeric"
-                  required
-                />
-              </label>
-            </fieldset>
-
-            <fieldset>
-              <legend>Payment</legend>
-
-              <label>
-                Credit Card Number
-                <input
-                  name="cardNumber"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="cc-number"
-                  required
-                />
-              </label>
-
-              <label>
-                Expiration Date
-                <input
-                  name="expiration"
-                  type="text"
-                  placeholder="MM/YY"
-                  autocomplete="cc-exp"
-                  required
-                />
-              </label>
-
-              <label>
-                Security Code
-                <input
-                  name="code"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="cc-csc"
-                  required
-                />
-              </label>
-            </fieldset>
-
-            <button type="submit" class="checkout-submit">Checkout</button>
-          </form>
-
-          <aside class="order-summary" id="orderSummary">
-            <h3>Order Summary</h3>
-
-            <p>Subtotal: <strong id="subtotal">$0.00</strong></p>
-            <p>Tax (6%): <strong id="tax">$0.00</strong></p>
-            <p>Shipping: <strong id="shipping">$0.00</strong></p>
-
-            <hr />
-
-            <p>Order Total: <strong id="orderTotal">$0.00</strong></p>
-
-            <p class="summary-note">
-              Tax and shipping are calculated after you enter your Zip Code.
-            </p>
-          </aside>
-        </div>
-      </section>
-    </main>
-    <!-- Checkout Success Modal -->
-    <div id="checkout-modal" class="checkout-modal hidden">
-      <div class="checkout-modal-content">
-        <h3>Order Successful 🎉</h3>
-        <p>Your order has been placed successfully.</p>
-        <p>You will be redirected to the home page shortly.</p>
-        <button id="modal-close-btn">Continue</button>
-      </div>
-    </div>
-
-    <script type="module" src="/js/checkout.js"></script>
-    <footer id="main-footer"></footer>
-  </body>
 </html>
