@@ -1,22 +1,11 @@
-import {
-  loadHeaderFooter,
-  updateCartCount,
-  getParam,
-  initSearchForm,
-  renderBreadcrumbs,
-  updateWishlistIcon,
-} from "./utils.mjs";
-import ProductData from "./ProductData.mjs";
+import { getParam, loadHeaderFooter } from "./utils.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import ProductDetails from "./ProductDetails.mjs";
 
-await loadHeaderFooter(updateCartCount);
-updateCartCount();
-initSearchForm();
-renderBreadcrumbs();
-updateWishlistIcon();
+loadHeaderFooter();
 
-const dataSource = new ProductData();
-const productId = getParam("product");
+const dataSource = new ExternalServices("tents");
+const productID = getParam("product");
 
-const productDetails = new ProductDetails(productId, dataSource);
-productDetails.init();
+const product = new ProductDetails(productID, dataSource);
+product.init();

@@ -1,17 +1,35 @@
-import { getLocalStorage, formDataToJSON } from "./utils.mjs";
+import { getLocalStorage } from "./utils.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 
-function getQty(item) {
-  const raw = item?.quantity ?? item?.Quantity ?? 1;
-  const n = parseInt(raw, 10);
-  return Number.isFinite(n) && n > 0 ? n : 1;
+const services = new ExternalServices();
+
+function formDataToJSON(formElement) {
+  // convert the form data to a JSON object
+  const formData = new FormData(formElement);
+  const convertedJSON = {};
+  formData.forEach((value, key) => {
+    convertedJSON[key] = value;
+  });
+  return convertedJSON;
+}
+
+function packageItems(items) {
+  const simplifiedItems = items.map((item) => {
+    console.log(item);
+    return {
+      id: item.Id,
+      price: item.FinalPrice,
+      name: item.Name,
+      quantity: 1,
+    };
+  });
+  return simplifiedItems;
 }
 
 export default class CheckoutProcess {
-  constructor(key, outputSelector, services) {
+  constructor(key, outputSelector) {
     this.key = key;
     this.outputSelector = outputSelector;
-    this.services = services;
-
     this.list = [];
     this.itemTotal = 0;
     this.shipping = 0;
@@ -20,73 +38,65 @@ export default class CheckoutProcess {
   }
 
   init() {
-    this.list = getLocalStorage(this.key) || [];
-    this.calculateItemSubTotal();
+    this.list = getLocalStorage(this.key);
+    this.calculateItemSummary();
   }
 
-  calculateItemSubTotal() {
-    this.itemTotal = this.list.reduce((sum, item) => {
-      const price = Number(item?.FinalPrice ?? item?.price ?? 0);
-      return sum + price * getQty(item);
-    }, 0);
-
-    const subEl = document.querySelector(`${this.outputSelector} #subtotal`);
-    if (subEl) subEl.innerText = `$${this.itemTotal.toFixed(2)}`;
+  calculateItemSummary() {
+    // calculate and display the total amount of the items in the cart, and the number of items.
+    const summaryElement = document.querySelector(
+      this.outputSelector + " #cartTotal"
+    );
+    const itemNumElement = document.querySelector(
+      this.outputSelector + " #num-items"
+    );
+    itemNumElement.innerText = this.list.length;
+    // calculate the total of all the items in the cart
+    const amounts = this.list.map((item) => item.FinalPrice);
+    this.itemTotal = amounts.reduce((sum, item) => sum + item);
+    summaryElement.innerText = `$${this.itemTotal}`;;
   }
 
   calculateOrderTotal() {
-    // Tax: 6%
-    this.tax = this.itemTotal * 0.06;
-
-    // Shipping: $10 first item + $2 each additional item (by total quantity)
-    const totalQty = this.list.reduce((sum, item) => sum + getQty(item), 0);
-    this.shipping = totalQty > 0 ? 10 + Math.max(0, totalQty - 1) * 2 : 0;
-
-    this.orderTotal = this.itemTotal + this.tax + this.shipping;
+    // calculate the shipping and tax amounts. Then use them to along with the cart total to figure out the order total
+    this.tax = (this.itemTotal * .06);
+    this.shipping = 10 + (this.list.length - 1) * 2;
+    this.orderTotal = (
+      parseFloat(this.itemTotal) +
+      parseFloat(this.tax) +
+      parseFloat(this.shipping)
+    )
+    // display the totals.
     this.displayOrderTotals();
   }
 
   displayOrderTotals() {
-    const taxEl = document.querySelector(`${this.outputSelector} #tax`);
-    const shipEl = document.querySelector(`${this.outputSelector} #shipping`);
-    const totalEl = document.querySelector(`${this.outputSelector} #orderTotal`);
+    // once the totals are all calculated display them in the order summary page
+    const tax = document.querySelector(`${this.outputSelector} #tax`);
+    const shipping = document.querySelector(`${this.outputSelector} #shipping`);
+    const orderTotal = document.querySelector(`${this.outputSelector} #orderTotal`);
 
-    if (taxEl) taxEl.innerText = `$${this.tax.toFixed(2)}`;
-    if (shipEl) shipEl.innerText = `$${this.shipping.toFixed(2)}`;
-    if (totalEl) totalEl.innerText = `$${this.orderTotal.toFixed(2)}`;
+    tax.innerText = `$${this.tax.toFixed(2)}`;
+    shipping.innerText = `$${this.shipping.toFixed(2)}`;
+    orderTotal.innerText = `$${this.orderTotal.toFixed(2)}`;
   }
 
-  packageItems(items) {
-    return items.map((item) => ({
-      id: item.Id,
-      name: item.NameWithoutBrand ?? item.Name ?? "",
-      price: Number(item?.FinalPrice ?? 0),
-      quantity: getQty(item),
-    }));
-  }
+  async checkout() {
+    const formElement = document.forms["checkout"];
+    const order = formDataToJSON(formElement);
 
-  async checkout(formElement) {
-    // eslint-disable-next-line no-useless-catch
+    order.orderDate = new Date().toISOString();
+    order.orderTotal = this.orderTotal;
+    order.tax = this.tax;
+    order.shipping = this.shipping;
+    order.items = packageItems(this.list);
+    //console.log(order);
+
     try {
-      const order = formDataToJSON(formElement);
-
-      // Ensure totals are ready (in case zip change didn't fire)
-      if (!this.orderTotal || this.orderTotal <= 0) {
-        this.calculateOrderTotal();
-      }
-
-      order.orderDate = new Date().toISOString();
-      order.items = this.packageItems(this.list);
-
-      order.orderTotal = this.orderTotal.toFixed(2);
-      order.tax = this.tax.toFixed(2);
-      order.shipping = this.shipping;
-
-      // Send to API (convertToJson will throw {name, message} on error)
-      return await this.services.checkout(order);
+      const response = await services.checkout(order);
+      console.log(response);
     } catch (err) {
-      // Let checkout.js decide how to display the error (popup/alerts)
-      throw err;
+      console.log(err);
     }
   }
 }
