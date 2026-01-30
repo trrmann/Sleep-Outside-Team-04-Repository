@@ -60,11 +60,9 @@ export default class CheckoutProcess {
   }
 
   async checkout(formElement) {
-    // eslint-disable-next-line no-useless-catch
     try {
       const order = formDataToJSON(formElement);
 
-      // Ensure totals are ready (in case zip change didn't fire)
       if (!this.orderTotal || this.orderTotal <= 0) {
         this.calculateOrderTotal();
       }
@@ -76,10 +74,8 @@ export default class CheckoutProcess {
       order.tax = this.tax.toFixed(2);
       order.shipping = this.shipping;
 
-      // Send to API (convertToJson will throw {name, message} on error)
       return await this.services.checkout(order);
     } catch (err) {
-      // Let checkout.js decide how to display the error (popup/alerts)
       throw err;
     }
   }

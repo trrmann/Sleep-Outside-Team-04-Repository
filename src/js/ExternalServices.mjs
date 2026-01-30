@@ -1,17 +1,22 @@
 async function convertToJson(res) {
-  const jsonResponse = await res.json().catch(() => null);
+  const jsonResponse = await res.json().catch(() => null); //converting body of the function to json 
+  // and handling with catch null the case when json is not received
 
-  if (res.ok) {
+  if(jsonResponse !== null) { //what will happen if we have a valid json file
+
+    if (res.ok) {
     return jsonResponse;
   }
-
-  // Send full error object
+  else {  // Send full error object
   throw {
     name: "servicesError",
     message: jsonResponse,
   };
 }
 
+  }
+  
+}
 
 const baseURL = import.meta.env.VITE_SERVER_URL;
 
@@ -102,3 +107,4 @@ export default class ExternalServices {
     return await convertToJson(response);
   }
 }
+
