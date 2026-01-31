@@ -51,6 +51,190 @@ param(
     [string]$ServiceName = "Service"
 )
 
+# Load Windows Forms for dialogs
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# Add Windows API for forcing window to foreground
+if (-not ([System.Management.Automation.PSTypeName]'Win32.User32').Type) {
+    Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+namespace Win32 {
+    public class User32 {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+        
+        [DllImport("user32.dll")]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+        
+        [DllImport("kernel32.dll")]
+        public static extern uint GetCurrentThreadId();
+        
+        [DllImport("user32.dll")]
+        public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+        
+        [DllImport("user32.dll")]
+        public static extern bool BringWindowToTop(IntPtr hWnd);
+        
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        
+        [DllImport("user32.dll")]
+        public static extern bool FlashWindow(IntPtr hWnd, bool bInvert);
+        
+        public const int SW_SHOW = 5;
+        public const int SW_RESTORE = 9;
+    }
+}
+"@
+}
+
+# Function to force window to foreground (aggressive approach)
+function Force-WindowToFront {
+    param([IntPtr]$WindowHandle)
+    
+    try {
+        # Get current foreground window
+        $foregroundWindow = [Win32.User32]::GetForegroundWindow()
+        $currentThreadId = [Win32.User32]::GetCurrentThreadId()
+        $foregroundThreadId = [Win32.User32]::GetWindowThreadProcessId($foregroundWindow, [IntPtr]::Zero)
+        
+        # Attach to the foreground thread
+        [Win32.User32]::AttachThreadInput($currentThreadId, $foregroundThreadId, $true) | Out-Null
+        
+        # Show and restore the window
+        [Win32.User32]::ShowWindow($WindowHandle, [Win32.User32]::SW_RESTORE) | Out-Null
+        [Win32.User32]::ShowWindow($WindowHandle, [Win32.User32]::SW_SHOW) | Out-Null
+        
+        # Bring to top and set foreground
+        [Win32.User32]::BringWindowToTop($WindowHandle) | Out-Null
+        [Win32.User32]::SetForegroundWindow($WindowHandle) | Out-Null
+        
+        # Flash the window to get attention
+        [Win32.User32]::FlashWindow($WindowHandle, $true) | Out-Null
+        Start-Sleep -Milliseconds 100
+        [Win32.User32]::FlashWindow($WindowHandle, $false) | Out-Null
+        
+        # Detach from the foreground thread
+        [Win32.User32]::AttachThreadInput($currentThreadId, $foregroundThreadId, $false) | Out-Null
+    } catch {
+        # If aggressive approach fails, try simple approach
+        [Win32.User32]::SetForegroundWindow($WindowHandle) | Out-Null
+    }
+}
+
+# Function to show OK dialog with auto-close timeout
+function Show-OkDialog {
+    param(
+        [string]$Message,
+        [string]$Title,
+        [int]$TimeoutSeconds = 10,
+        [System.Windows.Forms.MessageBoxIcon]$Icon = [System.Windows.Forms.MessageBoxIcon]::Information
+    )
+    
+    # Create form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = $Title
+    $form.Size = New-Object System.Drawing.Size(500, 230)
+    $form.StartPosition = 'CenterScreen'
+    $form.TopMost = $true
+    $form.FormBorderStyle = 'FixedDialog'
+    $form.MaximizeBox = $false
+    $form.MinimizeBox = $false
+    
+    # Add event handler to force focus
+    $form.Add_Shown({
+        $form.Activate()
+        $form.BringToFront()
+        $form.Focus()
+        Force-WindowToFront -WindowHandle $form.Handle
+    })
+    
+    # Create icon picture box
+    $iconBox = New-Object System.Windows.Forms.PictureBox
+    $iconBox.Location = New-Object System.Drawing.Point(20, 20)
+    $iconBox.Size = New-Object System.Drawing.Size(32, 32)
+    $iconBox.SizeMode = 'CenterImage'
+    
+    # Set icon based on type
+    switch ($Icon) {
+        'Error' { $iconBox.Image = [System.Drawing.SystemIcons]::Error.ToBitmap() }
+        'Warning' { $iconBox.Image = [System.Drawing.SystemIcons]::Warning.ToBitmap() }
+        'Information' { $iconBox.Image = [System.Drawing.SystemIcons]::Information.ToBitmap() }
+        default { $iconBox.Image = [System.Drawing.SystemIcons]::Information.ToBitmap() }
+    }
+    $form.Controls.Add($iconBox)
+    
+    # Create label for message
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(65, 20)
+    $label.Size = New-Object System.Drawing.Size(410, 100)
+    $label.Text = $Message -replace '`n', [System.Environment]::NewLine
+    $form.Controls.Add($label)
+    
+    # Create countdown label
+    $countdownLabel = New-Object System.Windows.Forms.Label
+    $countdownLabel.Location = New-Object System.Drawing.Point(20, 130)
+    $countdownLabel.Size = New-Object System.Drawing.Size(450, 20)
+    $countdownLabel.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
+    $countdownLabel.ForeColor = [System.Drawing.Color]::DarkRed
+    $countdownLabel.TextAlign = 'MiddleCenter'
+    $form.Controls.Add($countdownLabel)
+    
+    # Create OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Location = New-Object System.Drawing.Point(210, 160)
+    $okButton.Size = New-Object System.Drawing.Size(80, 30)
+    $okButton.Text = 'OK'
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.Controls.Add($okButton)
+    $form.AcceptButton = $okButton
+    
+    # Timer for countdown and auto-close
+    $script:countdown = $TimeoutSeconds
+    $timer = New-Object System.Windows.Forms.Timer
+    $timer.Interval = 1000  # 1 second
+    
+    $tickCount = 0
+    $timer.Add_Tick({
+        $tickCount++
+        Write-Host "[DEBUG] OK Dialog Timer Tick #$tickCount at $(Get-Date -Format 'HH:mm:ss.fff') - Countdown: $script:countdown" -ForegroundColor Magenta
+        
+        if ($script:countdown -le 0) {
+            Write-Host "[DEBUG] OK Dialog countdown reached 0 - closing dialog" -ForegroundColor Magenta
+            $timer.Stop()
+            $form.DialogResult = [System.Windows.Forms.DialogResult]::OK
+            $form.Close()
+        } else {
+            $script:countdown--
+            $countdownLabel.Text = "Auto-closing in $script:countdown seconds..."
+        }
+    })
+    
+    $countdownLabel.Text = "Auto-closing in $script:countdown seconds..."
+    Write-Host "[DEBUG] OK Dialog starting with $TimeoutSeconds second timeout at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Magenta
+    $timer.Start()
+    
+    # Show dialog
+    $dialogStartTime = Get-Date
+    $result = $form.ShowDialog()
+    $dialogEndTime = Get-Date
+    $dialogElapsed = ($dialogEndTime - $dialogStartTime).TotalSeconds
+    
+    $timer.Stop()
+    Write-Host "[DEBUG] OK Dialog closed at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Magenta
+    Write-Host "[DEBUG] OK Dialog was open for $([math]::Round($dialogElapsed, 2)) seconds" -ForegroundColor Magenta
+    Write-Host "[DEBUG] OK Dialog result: $result" -ForegroundColor Magenta
+    $form.Dispose()
+    
+    return $result
+}
+
 Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "Port Availability Check - Port $Port" -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
@@ -89,13 +273,8 @@ if ($null -eq $process) {
     Write-Host "[FAIL] Port $Port is in use but cannot identify the process" -ForegroundColor Red
     Write-Host "========================================`n" -ForegroundColor Cyan
     
-    Add-Type -AssemblyName System.Windows.Forms
-    [System.Windows.Forms.MessageBox]::Show(
-        "Port $Port is in use but the process cannot be identified.`n`nPlease manually stop the service using port $Port and try again.",
-        "Port $Port In Use",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Warning
-    ) | Out-Null
+    $errorMsg = "Port $Port is in use but the process cannot be identified.`n`nPlease manually stop the service using port $Port and try again."
+    Show-OkDialog -Message $errorMsg -Title "Port $Port In Use" -Icon Warning
     
     exit 1
 }
@@ -104,32 +283,123 @@ Write-Host "[!] Port $Port is in use" -ForegroundColor Yellow
 Write-Host "    Process: $($process.ProcessName) (PID: $($process.Id))" -ForegroundColor Yellow
 Write-Host "    Path: $($process.Path)" -ForegroundColor Gray
 
-# Ask user if they want to kill the process
-Add-Type -AssemblyName System.Windows.Forms
+# Ask user if they want to kill the process (with 10-second timeout)
 $message = "Port $Port is currently in use by:`n`n"
 $message += "Process: $($process.ProcessName) (PID: $($process.Id))`n"
 $message += "Path: $($process.Path)`n`n"
-$message += "Do you want to terminate this process to free the port?"
+$message += "Do you want to terminate this process to free the port?`n`n"
+$message += "(Auto-selecting YES in 10 seconds...)"
 
-$result = [System.Windows.Forms.MessageBox]::Show(
-    $message,
-    "Port $Port In Use - Kill Process?",
-    [System.Windows.Forms.MessageBoxButtons]::YesNo,
-    [System.Windows.Forms.MessageBoxIcon]::Question
-)
+Write-Host "`n[DEBUG] Showing popup at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Cyan
+$startTime = Get-Date
 
+# Create form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Port $Port In Use - Kill Process?"
+$form.Size = New-Object System.Drawing.Size(500, 250)
+$form.StartPosition = 'CenterScreen'
+$form.TopMost = $true
+$form.FormBorderStyle = 'FixedDialog'
+$form.MaximizeBox = $false
+$form.MinimizeBox = $false
+
+# Add event handler to force focus when form is shown
+$form.Add_Shown({
+    $form.Activate()
+    $form.BringToFront()
+    $form.Focus()
+    Force-WindowToFront -WindowHandle $form.Handle
+})
+
+# Create label for message
+$label = New-Object System.Windows.Forms.Label
+$label.Location = New-Object System.Drawing.Point(20, 20)
+$label.Size = New-Object System.Drawing.Size(450, 120)
+$label.Text = $message -replace '`n', [System.Environment]::NewLine
+$form.Controls.Add($label)
+
+# Create countdown label
+$countdownLabel = New-Object System.Windows.Forms.Label
+$countdownLabel.Location = New-Object System.Drawing.Point(20, 145)
+$countdownLabel.Size = New-Object System.Drawing.Size(450, 20)
+$countdownLabel.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
+$countdownLabel.ForeColor = [System.Drawing.Color]::DarkRed
+$form.Controls.Add($countdownLabel)
+
+# Create Yes button
+$yesButton = New-Object System.Windows.Forms.Button
+$yesButton.Location = New-Object System.Drawing.Point(200, 175)
+$yesButton.Size = New-Object System.Drawing.Size(80, 30)
+$yesButton.Text = 'Yes'
+$yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+$form.Controls.Add($yesButton)
+$form.AcceptButton = $yesButton
+
+# Create No button
+$noButton = New-Object System.Windows.Forms.Button
+$noButton.Location = New-Object System.Drawing.Point(290, 175)
+$noButton.Size = New-Object System.Drawing.Size(80, 30)
+$noButton.Text = 'No'
+$noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+$form.Controls.Add($noButton)
+$form.CancelButton = $noButton
+
+# Timer for countdown and auto-close
+$countdown = 10
+$timer = New-Object System.Windows.Forms.Timer
+$timer.Interval = 1000  # 1 second
+
+$timer.Add_Tick({
+    $script:countdown--
+    $countdownLabel.Text = "Auto-selecting YES in $script:countdown seconds..."
+    
+    if ($script:countdown -le 0) {
+        $timer.Stop()
+        $form.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+        $form.Close()
+    }
+})
+
+$countdownLabel.Text = "Auto-selecting YES in $countdown seconds..."
+$timer.Start()
+
+# Show dialog
+$result = $form.ShowDialog()
+$timer.Stop()
+$form.Dispose()
+
+$endTime = Get-Date
+$elapsed = ($endTime - $startTime).TotalSeconds
+Write-Host "[DEBUG] Popup closed at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Cyan
+Write-Host "[DEBUG] Elapsed time: $([math]::Round($elapsed, 2)) seconds" -ForegroundColor Cyan
+Write-Host "[DEBUG] Dialog result: $result" -ForegroundColor Cyan
+
+# Convert dialog result to popup-style result code
 if ($result -eq [System.Windows.Forms.DialogResult]::No) {
-    Write-Host "`n[!] User chose not to kill the process" -ForegroundColor Yellow
+    $popupResult = 7  # No
+} elseif ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+    $popupResult = 6  # Yes (includes timeout)
+} else {
+    $popupResult = -1  # Cancel or other
+}
+
+Write-Host "[DEBUG] Popup result code: $popupResult (-1=timeout, 6=Yes, 7=No)" -ForegroundColor Cyan
+
+# Handle user response
+if ($popupResult -eq 7) {
+    # No clicked - exit without killing
+    Write-Host "`n[!] User chose NOT to kill the process" -ForegroundColor Yellow
     Write-Host "========================================`n" -ForegroundColor Cyan
     
-    [System.Windows.Forms.MessageBox]::Show(
-        "Workflow cancelled.`n`nPlease manually stop the service using port $Port and try again.",
-        "Workflow Cancelled",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Information
-    ) | Out-Null
+    $cancelMsg = "Workflow cancelled.`n`nThe process was NOT terminated.`nPlease manually stop the service using port $Port and try again."
+    Show-OkDialog -Message $cancelMsg -Title "Workflow Cancelled" -Icon Information
     
     exit 1
+}
+
+# Timeout or Yes clicked - proceed with killing
+if ($popupResult -eq -1) {
+    Write-Host "`n[!] No response within 10 seconds - defaulting to YES" -ForegroundColor Yellow
 }
 
 # User chose to kill - attempt to terminate
@@ -144,12 +414,14 @@ try {
         Write-Host "[PASS] Successfully terminated process and freed port $Port" -ForegroundColor Green
         Write-Host "========================================`n" -ForegroundColor Cyan
         
-        [System.Windows.Forms.MessageBox]::Show(
-            "Process successfully terminated.`n`nPort $Port is now available for $ServiceName.",
-            "Success",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Information
-        ) | Out-Null
+        $successMsg = "Process successfully terminated.`n`nPort $Port is now available for $ServiceName."
+        Write-Host "[DEBUG] Showing OK popup at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Cyan
+        $okStartTime = Get-Date
+        Show-OkDialog -Message $successMsg -Title "Success" -Icon Information
+        $okEndTime = Get-Date
+        $okElapsed = ($okEndTime - $okStartTime).TotalSeconds
+        Write-Host "[DEBUG] OK popup closed at $(Get-Date -Format 'HH:mm:ss.fff')" -ForegroundColor Cyan
+        Write-Host "[DEBUG] OK popup elapsed time: $([math]::Round($okElapsed, 2)) seconds" -ForegroundColor Cyan
         
         exit 0
     } else {
@@ -163,12 +435,8 @@ try {
         
         Write-Host "========================================`n" -ForegroundColor Cyan
         
-        [System.Windows.Forms.MessageBox]::Show(
-            "Process was terminated but port $Port is still in use.`n`nPlease manually verify and stop any services using this port, then try again.",
-            "Port Still In Use",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Warning
-        ) | Out-Null
+        $errorMsg = "Process was terminated but port $Port is still in use.`n`nPlease manually verify and stop any services using this port, then try again."
+        Show-OkDialog -Message $errorMsg -Title "Port Still In Use" -Icon Warning
         
         exit 1
     }
@@ -176,12 +444,8 @@ try {
     Write-Host "[FAIL] Failed to terminate process: $_" -ForegroundColor Red
     Write-Host "========================================`n" -ForegroundColor Cyan
     
-    [System.Windows.Forms.MessageBox]::Show(
-        "Failed to terminate the process.`n`nError: $_`n`nPlease manually stop the service using port $Port and try again.",
-        "Failed to Kill Process",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Error
-    ) | Out-Null
+    $errorMsg = "Failed to terminate the process.`n`nError: $_`n`nPlease manually stop the service using port $Port and try again."
+    Show-OkDialog -Message $errorMsg -Title "Failed to Kill Process" -Icon Error
     
     exit 1
 }
