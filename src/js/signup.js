@@ -17,6 +17,13 @@ import {
   updateWishlistIcon,
 } from "./utils.mjs";
 import { setToken } from "./Auth.mjs";
+import {
+  debugLog,
+  debugToken,
+  debugAPIResponse,
+  debugFormSubmit,
+  showDevBanner,
+} from "./debug.mjs";
 
 // Load shared header/footer partials used site-wide.
 // Initialize UI pieces that are site-wide.
@@ -24,6 +31,7 @@ await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 updateWishlistIcon();
+showDevBanner();
 
 // Note: ExternalServices/service-based registration was removed to keep a
 // single canonical registration flow in this file. Use `services`
@@ -268,9 +276,12 @@ if (form) {
       passwordConfirm,
     });
     if (Object.keys(errors).length) {
+      debugLog("SIGNUP", "❌ Validation errors", errors);
       showFieldErrors(errors);
       return;
     }
+
+    debugLog("SIGNUP", "✅ Validation passed");
 
     const url = "/api/users"; // proxy-aware path (dev server may rewrite)
 
@@ -281,14 +292,30 @@ if (form) {
       const json = formDataToJSON(form);
       // Don't send the password confirmation to the backend; it's only client-side.
       if (json.passwordConfirm) delete json.passwordConfirm;
+
       const avatarFile = avatarInput?.files?.[0];
       if (avatarFile) {
+        debugLog("SIGNUP", "Avatar file selected", {
+          name: avatarFile.name,
+          size: avatarFile.size,
+          type: avatarFile.type,
+        });
         try {
           json.avatar = await fileToDataURL(avatarFile);
+          debugLog("SIGNUP", "Avatar converted to base64");
         } catch (errAvatar) {
+          debugLog("SIGNUP", "⚠️ Avatar conversion failed", errAvatar);
           // If file conversion fails, continue without avatar.
         }
       }
+
+      debugFormSubmit("Signup", {
+        ...json,
+        password: "***",
+        avatar: json.avatar ? "[BASE64 DATA]" : "none",
+      });
+      debugLog("SIGNUP", "Sending registration request", { endpoint: url });
+
       const createRes = await submitJSON(url, json);
 
       const createText = await createRes.text();
@@ -296,8 +323,11 @@ if (form) {
       try {
         createBody = JSON.parse(createText);
       } catch {
+        debugLog("SIGNUP", "⚠️ Response is not JSON", createText);
         // not JSON
       }
+
+      debugAPIResponse("/api/users", createRes, createBody);
 
       if (!createRes.ok) {
         const err =
@@ -305,13 +335,31 @@ if (form) {
           createText ||
           createRes.statusText;
         const failMsg = `Sign up failed: ${err}`;
+        debugLog("SIGNUP", "❌ Registration failed", {
+          status: createRes.status,
+          statusText: createRes.statusText,
+          error: err,
+          response: createBody,
+        });
         alertMessage(failMsg);
         if (statusEl) statusEl.textContent = failMsg;
         return;
       }
 
+      debugLog("SIGNUP", "✅ Registration successful", createBody);
+
       // Success: persist token if present and redirect
-      if (createBody && createBody.token) setToken(createBody.token);
+      if (createBody && createBody.token) {
+        debugLog("SIGNUP", "Token received in signup response");
+        debugToken(createBody.token, "Signup Token");
+        setToken(createBody.token);
+        debugLog("SIGNUP", "Token stored in localStorage");
+      } else {
+        debugLog(
+          "SIGNUP",
+          "⚠️ No token in signup response - user will need to login",
+        );
+      }
       const msg =
         (createBody && (createBody.message || createBody.msg)) ||
         "Account created.";
@@ -348,6 +396,11 @@ if (form) {
       }
     } catch (err) {
       // Network or unexpected error; surface a user-friendly message.
+      debugLog("SIGNUP", "❌ Network/unexpected error", {
+        error: err.message,
+        stack: err.stack,
+        fullError: err,
+      });
       const netMsg = "Network error while creating account.";
       alertMessage(netMsg);
       if (statusEl) statusEl.textContent = netMsg;

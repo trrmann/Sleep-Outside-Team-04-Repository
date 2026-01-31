@@ -8,11 +8,19 @@ import {
 } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 import { setToken } from "./Auth.mjs";
+import {
+  debugLog,
+  debugToken,
+  debugAPIResponse,
+  debugFormSubmit,
+  showDevBanner,
+} from "./debug.mjs";
 
 await loadHeaderFooter(updateCartCount);
 updateCartCount();
 initSearchForm();
 updateWishlistIcon();
+showDevBanner();
 
 const services = new ExternalServices();
 
@@ -47,17 +55,21 @@ if (form) {
       .toLowerCase();
     const password = String(form.password.value || "").trim();
 
-    // ✅ Send both keys to satisfy either backend expectation
+    // Send email and password
     const credentials = {
       email,
-      username: email,
       password,
     };
+
+    debugFormSubmit("Login", { email, password: "***" });
 
     try {
       if (statusEl) statusEl.textContent = "Logging in...";
 
+      debugLog("LOGIN", "Sending login request", { endpoint: "/api/login" });
       const res = await services.login(credentials);
+
+      debugAPIResponse("/api/login", { status: 200, ok: true }, res);
 
       const token =
         res?.token ||
@@ -67,22 +79,30 @@ if (form) {
         res?.data?.token;
 
       if (!token) {
+        debugLog("LOGIN", "⚠️ No token in response", res);
         throw new Error(
           "Login succeeded but no token was returned by the server.",
         );
       }
 
+      debugLog("LOGIN", "✅ Token received from server");
+      debugToken(token, "Login Token");
+
       setToken(token);
+      debugLog("LOGIN", "Token stored in localStorage");
 
       if (statusEl) statusEl.textContent = "";
-      alertMessage(
-        "Login successful. You can now access protected pages.",
-        false,
-      );
+      alertMessage("Login successful. Redirecting to orders...", false);
 
-      window.location.href = "/index.html";
+      debugLog("LOGIN", "Redirecting to /orders/");
+      window.location.href = "/orders/";
     } catch (err) {
       console.error("LOGIN ERROR:", err);
+      debugLog("LOGIN", "❌ Login failed", {
+        error: err.message,
+        stack: err.stack,
+        fullError: err,
+      });
       alertMessage(`Login failed: ${normalizeError(err)}`, true);
       if (statusEl) statusEl.textContent = "";
     }

@@ -55,6 +55,18 @@ export default class ExternalServices {
   // inside export default class ExternalServices { ... }
 
   async login(credentials) {
+    // Debug logging for development only
+    if (import.meta.env?.DEV) {
+      console.log("[DEBUG:API] Login request payload:", {
+        email: credentials.email,
+        username: credentials.username,
+        password: credentials.password ? "***" : undefined,
+        hasEmail: !!credentials.email,
+        hasUsername: !!credentials.username,
+        hasPassword: !!credentials.password,
+      });
+    }
+
     const options = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -62,6 +74,21 @@ export default class ExternalServices {
     };
 
     const response = await fetch(`${baseURL}login`, options);
+    
+    // Enhanced error logging for development
+    if (import.meta.env?.DEV && !response.ok) {
+      const clonedResponse = response.clone();
+      const errorBody = await clonedResponse.text();
+      console.log("[DEBUG:API] Login failed with status:", response.status);
+      console.log("[DEBUG:API] Error response body:", errorBody);
+      try {
+        const errorJson = JSON.parse(errorBody);
+        console.log("[DEBUG:API] Parsed error:", errorJson);
+      } catch (e) {
+        console.log("[DEBUG:API] Could not parse error as JSON");
+      }
+    }
+    
     return await convertToJson(response);
   }
 

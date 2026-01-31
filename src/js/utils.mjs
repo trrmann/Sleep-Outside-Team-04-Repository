@@ -116,11 +116,45 @@ export async function loadHeaderFooter(callback) {
 
   if (headerElement) {
     renderWithTemplate(headerTemplate, headerElement, null, callback);
+    updateHeaderAuth();
   }
 
   if (footerElement) {
     renderWithTemplate(footerTemplate, footerElement);
   }
+}
+
+// Update header links based on authentication state
+function updateHeaderAuth() {
+  // Dynamically import Auth to avoid circular dependencies
+  import("./Auth.mjs").then(({ isLoggedIn, isEmployee, clearToken }) => {
+    const loginLink = document.querySelector(".login");
+    if (!loginLink) return;
+
+    if (isLoggedIn()) {
+      // User is logged in - show Orders (if employee) and Logout
+      let html = "";
+      
+      if (isEmployee()) {
+        html += '<li class="orders"><a href="/orders/">Orders</a></li>';
+      }
+      
+      html += '<li class="logout"><a href="#" id="logout-link">Logout</a></li>';
+      
+      loginLink.outerHTML = html;
+
+      // Setup logout handler
+      const logoutLink = document.getElementById("logout-link");
+      if (logoutLink) {
+        logoutLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          clearToken();
+          window.location.href = "/login/";
+        });
+      }
+    }
+    // If not logged in, keep the Login link as-is
+  });
 }
 
 // For search form submission
