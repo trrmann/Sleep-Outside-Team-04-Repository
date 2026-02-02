@@ -314,6 +314,44 @@ button {
   grid-column: 3;
 }
 
+/*  */
+.cart-empty-message {
+  text-align: center;
+  padding: 4rem 1rem;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.cart-empty-message h2 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.cart-empty-message p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.continue-shopping {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  background-color: #2e7d32; /* green theme - change to match your site */
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.continue-shopping:hover {
+  background-color: #1b5e20;
+}
+
+/*  */
+
 /* W03 Individual: Category tiles (home page) */
 .categories {
   margin: 1.5rem 0;
