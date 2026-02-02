@@ -98,7 +98,7 @@ function getCartItemImage(item) {
     ""
   );
 }
-
+   // ── Improve cart with message
 function renderCartContents() {
   const cart = getLocalStorage("so-cart") || [];
   const productList = document.querySelector(".product-list");
@@ -108,7 +108,16 @@ function renderCartContents() {
   if (!productList) return;
 
   if (!cart.length) {
-    productList.innerHTML = "<p class='cart-empty'>Your cart is empty.</p>";
+    productList.innerHTML = `
+      <div class="cart-empty-message">
+        <h2>Your cart is empty</h2>
+        <p>Start exploring our outdoor gear and fill your cart with adventure essentials!</p>
+        <a href="/product_listing/" class="button continue-shopping">
+          Continue Shopping
+        </a>
+      </div>
+    `;
+
     if (cartFooter) cartFooter.classList.add("hide");
     return;
   }
